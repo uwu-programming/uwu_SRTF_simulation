@@ -1,22 +1,20 @@
 #include "linked_list.h"
-#include <stdlib.h>
-#include <stdio.h>
 
-Node* createNode(void* data, void** dataPointer){
+Node* createNode(size_t dataSize, void** dataPointer){
     Node* newNode = malloc(sizeof(Node));
 
     newNode -> next = NULL;
     newNode -> previous = NULL;
-    newNode -> data = data;
-    *dataPointer = (newNode -> data);
+    newNode -> data = malloc(dataSize);
+    *dataPointer = newNode -> data;
 
     return newNode;
 }
 
-void linkedListAddNext(void* data, Node* addAt, void** dataPointer){
+void linkedListAddNext(Node* addAt, size_t dataSize, void** dataPointer){
     Node* newNode = malloc(sizeof(Node));
 
-    newNode -> data = data;
+    newNode -> data = malloc(dataSize);
     
     newNode -> previous = addAt;
     newNode -> next = addAt -> next;
@@ -25,10 +23,10 @@ void linkedListAddNext(void* data, Node* addAt, void** dataPointer){
     *dataPointer = newNode -> data;
 }
 
-void linkedListAddPrevious(void* data, Node* addAt, void** dataPointer){
+void linkedListAddPrevious(Node* addAt, size_t dataSize, void** dataPointer){
     Node* newNode = malloc(sizeof(Node));
 
-    newNode -> data = data;
+    newNode -> data = malloc(dataSize);
 
     newNode -> next = addAt;
     newNode -> previous = addAt -> previous;

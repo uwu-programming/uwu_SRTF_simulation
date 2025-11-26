@@ -1,6 +1,8 @@
 #ifndef __LINKED_LIST__
 #define __LINKED_LIST__
 
+#include <stdlib.h>
+
 typedef struct LinkedListNode Node;
 
 struct LinkedListNode{
@@ -10,10 +12,10 @@ struct LinkedListNode{
     void* data;
 };
 
-Node* createNode(void* data, void** dataPointer);
+Node* createNode(size_t dataSize, void** dataPointer);
 
-void linkedListAddNext(void* data, Node* addAt, void** dataPointer);
+void linkedListAddNext(Node* addAt, size_t dataSize, void** dataPointer);
 
-void linkedListAddPrevious(void* data, Node* addAt, void** dataPointer);
+void linkedListAddPrevious(Node* addAt, size_t dataSize, void** dataPointer);
 
 #endif
