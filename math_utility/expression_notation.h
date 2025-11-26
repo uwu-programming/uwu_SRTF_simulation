@@ -4,6 +4,16 @@
 #ifndef __EXPRESSION_NOTATION__
 #define __EXPRESSION_NOTATION__
 
+typedef char* operand;
+typedef char* expression;
+typedef enum NOTATION_TYPE notationType;
 
+enum NOTATION_TYPE{
+    PREFIX = -1,
+    INFIX = 0,
+    POSTFIX = 1
+};
+
+expression notationConversion(expression e, notationType fromNotation, notationType toNotation);
 
 #endif
