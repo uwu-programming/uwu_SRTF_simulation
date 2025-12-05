@@ -79,7 +79,7 @@ expression infixToPrefix(expression e){
     
     int i = 0, j = 0;
     for (i; i < filteredExpressionLength; i++){
-        if (isalpha(filteredExpression[i])){
+        if (isalnum(filteredExpression[i])){
             processedExpression[j++] = filteredExpression[i];
         }else {
             currentOperator = filteredExpression[i];
