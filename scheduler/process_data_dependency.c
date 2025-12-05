@@ -17,18 +17,26 @@ expression pickIndependentExpression(expression prefixExpression){
     return independentExpression;
 }
 
+int calculateThread(expression prefixExpression){
+    int threadAmount = 0;
+
+    for (int i = 0; prefixExpression[i] != '\0'; i++)
+        if (!isalnum(prefixExpression[i]))
+            threadAmount++;
+
+    return threadAmount;
+}
+
 int calculateDependency(expression prefixExpression){
     int expressionLength = strlen(prefixExpression);
     int operatorAmount = 0;
     int independentCalculation = 0;
 
-    for (int i = 0; i < expressionLength - 2; i++){
+    for (int i = 0; i < expressionLength - 2; i++)
         if (pickIndependentExpression(&(prefixExpression[i])) != NULL)
             independentCalculation++;
-
-        if (!isalnum(prefixExpression[i]))
-            operatorAmount++;
-    }
+    
+    operatorAmount = calculateThread(prefixExpression);
 
     return operatorAmount - independentCalculation;
 }
@@ -53,4 +61,22 @@ Node* getIndependentCalculation(expression prefixExpression){
     }
 
     return independentCalculationList;
+}
+
+DependencyInformation* createDepenencyInformation(expression infixExpression){
+    DependencyInformation* dependencyInformation = malloc(sizeof(DependencyInformation));
+
+    dependencyInformation -> infixExpression = malloc(sizeof(char) * (strlen(infixExpression) + 1));
+    for (int i = 0; i < strlen(infixExpression); i++){
+        dependencyInformation -> infixExpression[i] = infixExpression[i];
+    }
+    dependencyInformation -> infixExpression[strlen(infixExpression)] = '\0';
+
+    dependencyInformation -> prefixExpression = infixToPrefix(dependencyInformation -> infixExpression);
+
+    dependencyInformation -> threadAmount = calculateThread(dependencyInformation -> prefixExpression);
+    dependencyInformation -> dependencyAmount = calculateDependency(dependencyInformation -> prefixExpression);
+    dependencyInformation -> independentCalculationList = getIndependentCalculation(dependencyInformation -> prefixExpression);
+
+    return dependencyInformation;
 }

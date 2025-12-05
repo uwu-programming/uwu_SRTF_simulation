@@ -8,15 +8,21 @@ typedef struct DependencyInformation DependencyInformation;
 
 struct DependencyInformation{
     expression infixExpression;
+    expression prefixExpression;
 
+    int threadAmount;
     int dependencyAmount;
     Node* independentCalculationList;
 };
 
 expression pickIndependentExpression(expression prefixExpression);
 
+int calculateThread(expression prefixExpression);
+
 int calculateDependency(expression prefixExpression);
 
 Node* getIndependentCalculation(expression prefixExpression);
+
+DependencyInformation* createDepenencyInformation(expression infixExpression);
 
 #endif
