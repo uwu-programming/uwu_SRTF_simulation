@@ -86,4 +86,16 @@ void main(){
         dummy = dummy -> next;
         printf("ex: %s\n", (*(ExpressionInformation**)(dummy -> data)) -> prefixExpression);
     }
+
+    printf("\ndependency information:\n");
+    DependencyInformation* dependencyInformation = createDepenencyInformation("(a+b) * (c-d) / (e+f)");
+    printf("infix: %s\n", dependencyInformation -> infixExpression);
+    printf("prefix: %s\n", dependencyInformation -> prefixExpression);
+    printf("thread: %d\n", dependencyInformation -> threadAmount);
+    printf("dependency: %d\n", dependencyInformation -> dependencyAmount);
+    dummy = dependencyInformation -> independentCalculationList;
+    while (dummy -> next != NULL){
+        dummy = dummy -> next;
+        printf("ex: %s\n", (*(ExpressionInformation**)(dummy -> data)) -> prefixExpression);
+    }
 }
