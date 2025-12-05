@@ -25,8 +25,6 @@ int checkPrecedence(operator o);
 
 expression infixToPrefix(expression e);
 
-// void InfixToPrefix(expression e);
-
 expression notationConversion(expression e, notationType fromNotation, notationType toNotation);
 
 #endif
