@@ -15,6 +15,20 @@ enum NOTATION_TYPE{
     POSTFIX = 1
 };
 
+struct ExpressionInformation{
+    expression prefixExpression;
+    operand operandA;
+    operand operandB;
+    operator expressionOperator;
+
+    int operandAValue;
+    int operandBValue;
+    int* expressionAnswer;
+
+    operand operandOverwrite;
+    char* expressionRepresentation;
+};
+
 expression removeSpaces(expression e);
 
 expression reverseExpression(expression e);
