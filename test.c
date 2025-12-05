@@ -1,5 +1,6 @@
 #include "linked_list.h"
 #include "expression_notation.h"
+#include "process_data_dependency.h"
 #include "stack.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -59,11 +60,21 @@ void main(){
     popStack(stack, (void*)(&placeholder));
     printf("pop: %d\n", *placeholder);
 
-    char buffer[1024]; 
-
     printf("%s\n", infixToPrefix("a+b*c"));
     printf("%s\n", infixToPrefix("a*b+c"));
     printf("%s\n", infixToPrefix("a*b+c/d"));
     printf("%s\n", infixToPrefix("(a+b)*(c+d)"));
     printf("%s\n", infixToPrefix("((a+b)/(c*d))-(e+f)"));
+    printf("%s\n", infixToPrefix("(a+b) * (c-d) / (e+f)"));
+    printf("%s\n", infixToPrefix("(e+f)*((a+b)+c)"));
+    printf("%s\n", infixToPrefix("ans1+ans2"));
+
+    printf("\n");
+
+    printf("%d\n", calculateDependency(infixToPrefix("a+b*c")));
+    printf("%d\n", calculateDependency(infixToPrefix("a*b+c")));
+    printf("%d\n", calculateDependency(infixToPrefix("a*b+c/d")));
+    printf("%d\n", calculateDependency(infixToPrefix("((a+b)/(c*d))-(e+f)")));
+    printf("%d\n", calculateDependency(infixToPrefix("(a+b) * (c-d) / (e+f)")));
+    printf("%d\n", calculateDependency(infixToPrefix("(e+f)*((a+b)+c)")));
 }
