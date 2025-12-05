@@ -77,4 +77,13 @@ void main(){
     printf("%d\n", calculateDependency(infixToPrefix("((a+b)/(c*d))-(e+f)")));
     printf("%d\n", calculateDependency(infixToPrefix("(a+b) * (c-d) / (e+f)")));
     printf("%d\n", calculateDependency(infixToPrefix("(e+f)*((a+b)+c)")));
+
+    printf("\ngetIndependentCalculation:\n");
+    Node* calList = getIndependentCalculation(infixToPrefix("(a+b) * (c-d) / (e+f)"));
+    Node* dummy = malloc(sizeof(Node*));
+    dummy = calList;
+    while(dummy -> next != NULL){
+        dummy = dummy -> next;
+        printf("ex: %s\n", (*(ExpressionInformation**)(dummy -> data)) -> prefixExpression);
+    }
 }

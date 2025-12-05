@@ -125,7 +125,31 @@ expression infixToPrefix(expression e){
     return processedExpression;
 }
 
-expression notationConversion(expression e, notationType fromNotation, notationType toNotation){
+ExpressionInformation* createExpressionInformation(expression independentExpression){
+    ExpressionInformation* expressionInformation = malloc(sizeof(ExpressionInformation));
 
+    expressionInformation -> prefixExpression = malloc(sizeof(char) * 4);
+    for (int i = 0; i < 3; i++){
+        expressionInformation -> prefixExpression[i] = independentExpression[i];
+    }
+    expressionInformation -> prefixExpression[3] = '\0';
+
+    expressionInformation -> operandA = malloc(sizeof(char) * 2);
+    expressionInformation -> operandB = malloc(sizeof(char) * 2);
+
+    expressionInformation -> operandA[0] = independentExpression[1];
+    expressionInformation -> operandA[1] = '\0';
+    expressionInformation -> operandB[0] = independentExpression[2];
+    expressionInformation -> operandB[1] = '\0';
+
+    expressionInformation -> expressionOperator = independentExpression[0];
+
+    expressionInformation -> operandAValue = 0;
+    expressionInformation -> operandBValue = 0;
+    expressionInformation -> expressionAnswer = NULL;
+
+    expressionInformation -> operandOverwrite = malloc(sizeof(char) * 2);
+    expressionInformation -> expressionRepresentation = NULL;
+
+    return expressionInformation;
 }
-
