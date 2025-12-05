@@ -24,3 +24,11 @@ void popStack(Stack* stack, void** elementPointer){
         stack -> next = stack -> next -> next;
     }
 }
+
+void peekStack(Stack* stack, void** elementPointer){
+    if (stack -> next == NULL){
+        *elementPointer = NULL;
+    }else {
+        *elementPointer = stack -> next -> data;
+    }
+}
