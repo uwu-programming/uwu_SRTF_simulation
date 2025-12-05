@@ -12,4 +12,6 @@ void pushStack(Stack* stack, size_t elementSize, void** elementPointer);
 
 void popStack(Stack* stack, void** elementPointer);
 
+void peekStack(Stack* stack, void** elementPointer);
+
 #endif
