@@ -1,7 +1,9 @@
 #include "linked_list.h"
+#include "expression_notation.h"
 #include "stack.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 void main(){
     int* placeholder;
@@ -56,4 +58,12 @@ void main(){
     printf("pop: %d\n", *placeholder);
     popStack(stack, (void*)(&placeholder));
     printf("pop: %d\n", *placeholder);
+
+    char buffer[1024]; 
+
+    printf("%s\n", infixToPrefix("a+b*c"));
+    printf("%s\n", infixToPrefix("a*b+c"));
+    printf("%s\n", infixToPrefix("a*b+c/d"));
+    printf("%s\n", infixToPrefix("(a+b)*(c+d)"));
+    printf("%s\n", infixToPrefix("((a+b)/(c*d))-(e+f)"));
 }
