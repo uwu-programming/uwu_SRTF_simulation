@@ -33,3 +33,54 @@ void addProcess(ProcessScheduler* processSceduler, expression infixExpression){
     linkedListAddNext(processSceduler -> processList, sizeof(newProcess), (void*)(&dummyCollector));
     *((Process**)(dummyCollector)) = newProcess;
 }
+
+void sortProcessPriority(ProcessScheduler* processScheduler){
+    void* dummyI = NULL;
+    void* dummyJ = NULL;
+    void* dummyCollector = NULL;
+
+    TimeFrame arrivalTime;
+    ProcessTime hoveringBurstTime;
+
+    dummyI = processScheduler -> processList;
+    while (((Node*)dummyI) -> next != NULL){
+        dummyI = ((Node*)dummyI) -> next;
+        dummyJ = dummyI;
+
+        hoveringBurstTime = (*(Process**)(((Node*)dummyI) -> data)) -> remainingBurstTime;
+        while (((Node*)dummyJ) -> next != NULL){
+            dummyJ = ((Node*)dummyJ) -> next;
+
+            if ((*(Process**)(((Node*)dummyJ) -> data)) -> remainingBurstTime < hoveringBurstTime){
+                ((Node*)dummyJ) -> previous -> next = ((Node*)dummyJ) -> next;
+                ((Node*)dummyJ) -> next -> previous = ((Node*)dummyJ) -> previous;
+
+                ((Node*)dummyI) -> previous -> next = (Node*)dummyJ;
+                ((Node*)dummyJ) -> next = ((Node*)dummyI);
+                ((Node*)dummyJ) -> previous = ((Node*)dummyI) -> previous;
+                ((Node*)dummyI) -> previous = (Node*)dummyJ;
+            }
+        }
+    }
+
+    dummyI = processScheduler -> processList;
+    while (((Node*)dummyI) -> next != NULL){
+        dummyI = ((Node*)dummyI) -> next;
+        dummyJ = dummyI;
+
+        arrivalTime = (*(Process**)(((Node*)dummyI) -> data)) -> arrivalTime;
+        while (((Node*)dummyJ) -> next != NULL){
+            dummyJ = ((Node*)dummyJ) -> next;
+
+            if ((*(Process**)(((Node*)dummyJ) -> data)) -> arrivalTime < arrivalTime){
+                ((Node*)dummyJ) -> previous -> next = ((Node*)dummyJ) -> next;
+                ((Node*)dummyJ) -> next -> previous = ((Node*)dummyJ) -> previous;
+
+                ((Node*)dummyI) -> previous -> next = (Node*)dummyJ;
+                ((Node*)dummyJ) -> next = ((Node*)dummyI);
+                ((Node*)dummyJ) -> previous = ((Node*)dummyI) -> previous;
+                ((Node*)dummyI) -> previous = (Node*)dummyJ;
+            }
+        }
+    }
+}
