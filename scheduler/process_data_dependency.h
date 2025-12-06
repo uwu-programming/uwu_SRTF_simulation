@@ -10,6 +10,8 @@ struct DependencyInformation{
     expression infixExpression;
     expression prefixExpression;
 
+    operand currentNewVariable;
+
     int threadAmount;
     int dependencyAmount;
     Node* independentCalculationList;

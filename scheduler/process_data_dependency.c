@@ -74,6 +74,10 @@ DependencyInformation* createDepenencyInformation(expression infixExpression){
 
     dependencyInformation -> prefixExpression = infixToPrefix(dependencyInformation -> infixExpression);
 
+    dependencyInformation -> currentNewVariable = malloc(sizeof(char) * 2);
+    dependencyInformation -> currentNewVariable[0] = 'A';
+    dependencyInformation -> currentNewVariable[1] = '\0';
+
     dependencyInformation -> threadAmount = calculateThread(dependencyInformation -> prefixExpression);
     dependencyInformation -> dependencyAmount = calculateDependency(dependencyInformation -> prefixExpression);
     dependencyInformation -> independentCalculationList = getIndependentCalculation(dependencyInformation -> prefixExpression);
