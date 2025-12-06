@@ -5,6 +5,9 @@
 
 typedef enum PROCESS_STATE ProcessState;
 typedef struct Process Process;
+typedef struct ProcessHistory ProcessHistory;
+typedef int ProcessTime;
+typedef int TimeFrame;
 
 enum PROCESS_STATE{
     NEW,        // newly created process, haven't done data dependency and thread calculate
@@ -16,10 +19,25 @@ enum PROCESS_STATE{
 
 struct Process{
     ProcessState processState;
+    int processID;
 
+    // the information of the process (the expression's information)
     DependencyInformation* dependencyInformation;
+    TimeFrame arrivalTime;
+    ProcessTime initialBurstTime;
+    ProcessTime remainingBurstTime;
+    ProcessTime waitingTime;
 };
 
-Process* createProcess(expression infixExpression);
+struct ProcessHistory{
+    Process* executedProcess;
+
+    expression executedExpression;
+    
+    TimeFrame timeStart;
+    TimeFrame timeEnd;
+};
+
+Process* createProcess(expression infixExpression, int processID, TimeFrame arrivalTime);
 
 #endif
