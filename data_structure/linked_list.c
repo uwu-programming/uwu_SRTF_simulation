@@ -18,6 +18,10 @@ void linkedListAddNext(Node* addAt, size_t dataSize, void** dataPointer){
     
     newNode -> previous = addAt;
     newNode -> next = addAt -> next;
+    
+    if (addAt -> next != NULL)
+        addAt -> next -> previous = newNode;
+
     addAt -> next = newNode;
 
     *dataPointer = newNode -> data;
