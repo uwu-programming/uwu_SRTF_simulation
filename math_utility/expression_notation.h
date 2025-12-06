@@ -24,10 +24,10 @@ struct ExpressionInformation{
 
     int operandAValue;
     int operandBValue;
-    int* expressionAnswer;
+    int expressionAnswer;
 
     operand operandOverwrite;
-    char* expressionRepresentation;
+    operand expressionRepresentation;
 };
 
 expression removeSpaces(expression e);
