@@ -2,6 +2,9 @@
 #include "expression_notation.h"
 #include "process_data_dependency.h"
 #include "stack.h"
+#include "process.h"
+#include "process_scheduler.h"
+#include "processor.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,8 +17,12 @@ void main(){
         (void*)(&placeholder)
     );
 
+    printf("created node testc\n");
+
     linkedListAddNext(mynode, sizeof(int), (void*)(&placeholder));
     *placeholder = 100;
+
+    printf("first addnext\n");
 
     linkedListAddNext(mynode, sizeof(int), (void*)(&placeholder));
     *placeholder = 10;
@@ -67,10 +74,12 @@ void main(){
     printf("%s\n", infixToPrefix("((a+b)/(c*d))-(e+f)"));
     printf("%s\n", infixToPrefix("(a+b) * (c-d) / (e+f)"));
     printf("%s\n", infixToPrefix("(e+f)*((a+b)+c)"));
+    printf("%s\n", infixToPrefix("(a+b+c+d)*e"));
     printf("%s\n", infixToPrefix("ans1+ans2"));
 
     printf("\n");
 
+    printf("%d\n", calculateDependency(infixToPrefix("a+b+c+d+e+f")));
     printf("%d\n", calculateDependency(infixToPrefix("a+b*c")));
     printf("%d\n", calculateDependency(infixToPrefix("a*b+c")));
     printf("%d\n", calculateDependency(infixToPrefix("a*b+c/d")));
@@ -98,4 +107,31 @@ void main(){
         dummy = dummy -> next;
         printf("ex: %s\n", (*(ExpressionInformation**)(dummy -> data)) -> prefixExpression);
     }
+
+    printf("\nprocess:\n");
+    ProcessScheduler* processScheduler = createProcessScheduler(4, ON);
+    printf("done create process scheduler\n");
+
+    printf("process scheduler core: %d\n", processScheduler -> processorCoreAmount);
+    dummy = processScheduler -> processorList;
+    while (dummy -> next != NULL){
+        dummy = dummy -> next;
+        printf("processor: %d\n", (*((Processor**)(dummy -> data))) -> processorID);
+    }
+    addProcess(processScheduler, "((a+b)/(c*d))-(e+f)");
+    addProcess(processScheduler, "a+b*c");
+    addProcess(processScheduler, "x-y");
+    addProcess(processScheduler, "x-y+z");
+    addProcess(processScheduler, "j+k");
+    addProcess(processScheduler, "a*b+c/d");
+    addProcess(processScheduler, "a*b+c");
+
+    printf("\nsort:\n");
+    sortProcessPriority(processScheduler);
+    dummy = processScheduler -> processList;
+    while (dummy -> next != NULL){
+        dummy = dummy -> next;
+        printf("expression: %s\n", (*((Process**)(dummy -> data))) -> dependencyInformation -> prefixExpression);
+    }
+    printf("i am the best programmer");
 }
