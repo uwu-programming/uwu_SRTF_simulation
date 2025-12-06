@@ -146,7 +146,7 @@ ExpressionInformation* createExpressionInformation(expression independentExpress
 
     expressionInformation -> operandAValue = 0;
     expressionInformation -> operandBValue = 0;
-    expressionInformation -> expressionAnswer = NULL;
+    expressionInformation -> expressionAnswer = 0;
 
     expressionInformation -> operandOverwrite = malloc(sizeof(char) * 2);
     expressionInformation -> expressionRepresentation = NULL;
