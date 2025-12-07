@@ -1,6 +1,7 @@
 #include <gtk/gtk.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <pthread.h>
 #include "expression_notation.h"
 #include "process_scheduler.h"
 #include "processor.h"
@@ -27,7 +28,7 @@ void initializeSimulator();
 void startSimulator();
 void simulatorAddProcess(ProcessScheduler* processScheduler, expression infixExpression);
 
-void updateProcessList();
+gboolean updateProcessList();
 
 /*___________________________________________________________________*/
 // signal
@@ -117,15 +118,18 @@ void initializeSimulator(){
     uiController.processList = GTK_LIST_BOX(gtk_builder_get_object(builder, "processList"));
 
     simulatorProcessScheduler = createProcessScheduler();
+    simulatorAddProcess(simulatorProcessScheduler, "a+b");
+    simulatorAddProcess(simulatorProcessScheduler, "e-f");
+    simulatorAddProcess(simulatorProcessScheduler, "a+b+c");
+    simulatorAddProcess(simulatorProcessScheduler, "a/b");
 }
 
 void simulatorAddProcess(ProcessScheduler* processScheduler, expression infixExpression){
     addProcess(processScheduler, infixExpression);
-
-    updateProcessList();
 }
 
-void updateProcessList(){
+gboolean updateProcessList(){
+    printf("updating\n");
     gtk_list_box_remove_all(uiController.processList);
     
     void* dummyCollector = simulatorProcessScheduler -> processList;
@@ -134,6 +138,8 @@ void updateProcessList(){
         gtk_list_box_append(uiController.processList, gtk_label_new((*((Process**)(((Node*)dummyCollector) -> data))) -> dependencyInformation -> infixExpression));
         printf("%s\n", (*((Process**)(((Node*)dummyCollector) -> data))) -> dependencyInformation -> infixExpression);
     }
+    printf("done\n");
+    return TRUE;
 }
 
 static void activate(GtkApplication* app, gpointer user_data){
@@ -151,6 +157,8 @@ static void activate(GtkApplication* app, gpointer user_data){
 
     initializeSimulator();
 
+    g_timeout_add_seconds(1, updateProcessList, NULL);
+    
     gtk_window_present(GTK_WINDOW(window));
 }
 
@@ -161,6 +169,7 @@ int main(int argc, char** argv){
     app = gtk_application_new("com.uwu-programming.uwu_SRTF_simulation", G_APPLICATION_DEFAULT_FLAGS);
     g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
     status = g_application_run(G_APPLICATION(app), argc, argv);
+
     g_object_unref(app);
 
     return status;
