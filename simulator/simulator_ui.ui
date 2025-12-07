@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+    <object id="windowContent" class="GtkBox">
+        <!-- could not parse enum into property, so the Gtk.Orientation.GTK_ORIENTATION_HORIZONTAL is represented as its integer value 0 here -->
+        <property name="orientation">0</property>
+
+        <child>
+            <object id="processSection" class="GtkBox">
+                <child>
+                    <object class="GtkLabel">
+                        <property name="label">Process</property>
+                        <property name="valign">1</property>
+                        <property name="width-chars">25</property>
+                    </object>
+                </child>
+            </object>
+        </child>
+
+        <child>
+            <object id="simulationSection" class="GtkBox">
+                <child>
+                    <object id="processorSection" class="GtkBox"></object>
+                </child>
+
+                <child>
+                    <object id="simulatorConfigurationSection" class="GtkBox"></object>
+                </child>
+            </object>
+        </child>
+    </object>
+</interface>
