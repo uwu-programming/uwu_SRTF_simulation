@@ -16,11 +16,6 @@ static GtkCssProvider* cssProvider;
 
 struct SimulatorUIController{
     GtkScrolledWindow* processListWindow;
-    gulong processListWindowHandlerID;
-    // save the scroll bar magnitude
-    GtkAdjustment* vAdjustment;
-    GtkAdjustment* hAdjustment;
-
     GtkListBox* processList;
 }uiController;
 /*___________________________________________________________________*/
@@ -116,16 +111,9 @@ void resetSimulator(){
     initializeSimulator();
 }
 
-void scrolleda(GtkAdjustment* adjust, gpointer userData){
-    uiController.vAdjustment = gtk_adjustment_new(gtk_adjustment_get_value(adjust), gtk_adjustment_get_lower(adjust), gtk_adjustment_get_upper(adjust), gtk_adjustment_get_step_increment(adjust), gtk_adjustment_get_page_increment(adjust), gtk_adjustment_get_page_size(adjust));
-}
-
 void initializeSimulator(){
     uiController.processListWindow = GTK_SCROLLED_WINDOW(gtk_builder_get_object(builder, "processListWindow"));
     uiController.processList = GTK_LIST_BOX(gtk_builder_get_object(builder, "processList"));
-
-    uiController.processListWindowHandlerID = g_signal_connect(gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(uiController.processListWindow)), "value-changed", G_CALLBACK(scrolleda), NULL);
-    uiController.vAdjustment = gtk_adjustment_new(0, 0, 0, 0, 0, 0);
 
     simulatorProcessScheduler = createProcessScheduler(2, ON);
     simulatorAddProcess(simulatorProcessScheduler, "a+b");
@@ -145,9 +133,6 @@ void simulatorAddProcess(ProcessScheduler* processScheduler, expression infixExp
 }
 
 gboolean updateProcessList(){
-    GtkAdjustment* vAdjustment = uiController.vAdjustment;
-
-    g_signal_handler_disconnect(gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(uiController.processListWindow)), uiController.processListWindowHandlerID);
     gtk_list_box_remove_all(uiController.processList);
     
     void* dummyCollector = simulatorProcessScheduler -> processList;
@@ -156,10 +141,6 @@ gboolean updateProcessList(){
         gtk_list_box_append(uiController.processList, gtk_label_new((*((Process**)(((Node*)dummyCollector) -> data))) -> dependencyInformation -> infixExpression));
         printf("%s\n", (*((Process**)(((Node*)dummyCollector) -> data))) -> dependencyInformation -> infixExpression);
     }
-
-    //gtk_scrolled_window_set_vadjustment(uiController.processListWindow, vAdjustment);
-    uiController.vAdjustment = vAdjustment;
-    uiController.processListWindowHandlerID = g_signal_connect(gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(uiController.processListWindow)), "value-changed", G_CALLBACK(scrolleda), NULL);
 
     return TRUE;
 }

@@ -27,6 +27,8 @@
                         <child>
                             <object id="processList" class="GtkListBox">
                                 <property name="selection-mode">0</property>
+                                <property name="focusable">FALSE</property>
+                                <property name="can-target">FALSE</property>
                             </object>
                         </child>
                     </object>
@@ -54,18 +56,87 @@
                         <property name="orientation">1</property>
 
                         <child>
-                            <object id="" class="GtkLabel">
+                            <object id="simulationLabel" class="GtkLabel">
                                 <property name="label">Simulation</property>
                             </object>
                         </child>
 
+                        <!-- timeframe display section -->
                         <child>
-                            <object id="progressDisplaySection" class="GtkScrolledWindow">
+                            <object id="timeframe_section" class="GtkBox">
+                                <!-- dummy GtkBox-->
+                                <child>
+                                    <!-- split the box into two triangle section for displaying "processor" and "timeframe" label -->
+                                    <object class="GtkBox">
+                                        <style><class name="timeframeDummySection"/></style>
+                                        <property name="width-request">160</property>
+                                        <property name="height-request">80</property>
+                                        <property name="orientation">0</property>
+                                        <property name="homogeneous">TRUE</property>
+                                        
+                                        <!-- processor label -->
+                                        <child>
+                                            <object class="GtkBox">
+                                                <property name="halign">1</property>
+                                                <property name="valign">2</property>
+
+                                                <child>
+                                                    <object class="GtkLabel">
+                                                        <property name="label">Processor</property>
+                                                    </object>
+                                                </child>
+                                            </object>
+                                        </child>
+
+                                        <!-- timeframe label -->
+                                        <child>
+                                            <object class="GtkBox">
+                                                <property name="halign">2</property>
+                                                <property name="valign">1</property>
+
+                                                <child>
+                                                    <object class="GtkLabel">
+                                                        <property name="label">Timeframe</property>
+                                                    </object>
+                                                </child>
+                                            </object>
+                                        </child>
+                                    </object>
+                                </child>
+
+                                <!-- timeframe display -->
+                                <child>
+                                    <object class="GtkScrolledWindow">
+                                        <child>
+                                            <object id="timeframeListBox" class="GtkListBox">
+                                                <style><class name="timeframeListBox"/></style>
+                                                <property name="hexpand">TRUE</property>
+
+                                            </object>
+                                        </child>
+                                    </object>
+                                </child>
+                            </object>
+                        </child>
+
+                        <!-- processor and gantt chart display section -->
+                        <child>
+                            <object id="processor_ganttchart_section" class="GtkBox">
+                                <style><class name="processor_ganttchart_section"/></style>
                                 <property name="vexpand">TRUE</property>
 
+                                <!-- processor list -->
                                 <child>
-                                    <object id="progressDisplayList" class="GtkListBox">
-                                        <property name="selection-mode">0</property>
+                                    <object class="GtkScrolledWindow">
+                                        <style><class name="processorListScrolledWindow"/></style>
+                                        <property name="width-request">160</property>
+
+                                    </object>
+                                </child>
+
+                                <!-- ganttchart progress list -->
+                                <child>
+                                    <object class="GtkScrolledWindow">
                                     </object>
                                 </child>
                             </object>
