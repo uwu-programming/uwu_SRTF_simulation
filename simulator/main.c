@@ -117,7 +117,6 @@ void resetSimulator(){
 }
 
 void scrolleda(GtkAdjustment* adjust, gpointer userData){
-    printf("scrolleda: %f\n", gtk_adjustment_get_value(adjust));
     uiController.vAdjustment = gtk_adjustment_new(gtk_adjustment_get_value(adjust), gtk_adjustment_get_lower(adjust), gtk_adjustment_get_upper(adjust), gtk_adjustment_get_step_increment(adjust), gtk_adjustment_get_page_increment(adjust), gtk_adjustment_get_page_size(adjust));
 }
 
@@ -127,7 +126,6 @@ void initializeSimulator(){
 
     uiController.processListWindowHandlerID = g_signal_connect(gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(uiController.processListWindow)), "value-changed", G_CALLBACK(scrolleda), NULL);
     uiController.vAdjustment = gtk_adjustment_new(0, 0, 0, 0, 0, 0);
-    printf("isconnect? %d\n", g_signal_handler_is_connected(gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(uiController.processListWindow)), uiController.processListWindowHandlerID));
 
     simulatorProcessScheduler = createProcessScheduler(2, ON);
     simulatorAddProcess(simulatorProcessScheduler, "a+b");
@@ -147,13 +145,10 @@ void simulatorAddProcess(ProcessScheduler* processScheduler, expression infixExp
 }
 
 gboolean updateProcessList(){
-    printf("startofthis?\n");
     GtkAdjustment* vAdjustment = uiController.vAdjustment;
 
     g_signal_handler_disconnect(gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(uiController.processListWindow)), uiController.processListWindowHandlerID);
-    printf("beforeremove?\n");
     gtk_list_box_remove_all(uiController.processList);
-    printf("remove?\n");
     
     void* dummyCollector = simulatorProcessScheduler -> processList;
     while(((Node*)dummyCollector) -> next != NULL){
@@ -162,9 +157,7 @@ gboolean updateProcessList(){
         printf("%s\n", (*((Process**)(((Node*)dummyCollector) -> data))) -> dependencyInformation -> infixExpression);
     }
 
-    printf("isconnectb? %d\n", g_signal_handler_is_connected(gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(uiController.processListWindow)), uiController.processListWindowHandlerID));
-    printf("isconnecta? %d\n", g_signal_handler_is_connected(gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(uiController.processListWindow)), uiController.processListWindowHandlerID));
-    gtk_scrolled_window_set_vadjustment(uiController.processListWindow, vAdjustment);
+    //gtk_scrolled_window_set_vadjustment(uiController.processListWindow, vAdjustment);
     uiController.vAdjustment = vAdjustment;
     uiController.processListWindowHandlerID = g_signal_connect(gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(uiController.processListWindow)), "value-changed", G_CALLBACK(scrolleda), NULL);
 
@@ -187,7 +180,7 @@ static void activate(GtkApplication* app, gpointer user_data){
     initializeSimulator();
 
     g_timeout_add_seconds(1, updateProcessList, NULL);
-    
+
     gtk_window_present(GTK_WINDOW(window));
 }
 
