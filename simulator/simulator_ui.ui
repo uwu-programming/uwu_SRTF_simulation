@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+    <object id="windowContent" class="GtkBox">
+        <style><class name="windowContent"/></style>
+        <!-- could not parse enum into property, so the Gtk.Orientation.GTK_ORIENTATION_HORIZONTAL is represented as its integer value 0 here -->
+        <property name="orientation">0</property>
+
+        <child>
+            <object id="processSection" class="GtkBox">
+                <style><class name="processSection"/></style>
+                <property name="orientation">1</property>
+
+                <!-- Label: Process -->
+                <child>
+                    <object id="processLabel" class="GtkLabel">
+                        <style><class name="processLabel"/></style>
+                        <property name="label">Process</property>
+                        <property name="width-chars">25</property>
+                    </object>
+                </child>
+
+                <!-- Scrollable -->
+                <child>
+                    <object id="processListWindow" class="GtkScrolledWindow">
+                        <property name="vexpand">TRUE</property>
+                        <child>
+                            <object id="processList" class="GtkListBox"></object>
+                        </child>
+                    </object>
+                </child>
+
+                <!-- Button -->
+                <child>
+                    <object id="addProcessButton" class="GtkButton">
+                        <property name="label">Add process</property>
+                        <signal name="clicked" handler="addProcessButton__clicked"/>
+                    </object>
+                </child>
+            </object>
+        </child>
+
+        <child>
+            <object id="simulationSection" class="GtkBox">
+                <style><class name="simulationSection"/></style>
+                <child>
+                    <object id="processorSection" class="GtkBox"></object>
+                </child>
+
+                <child>
+                    <object id="simulatorConfigurationSection" class="GtkBox"></object>
+                </child>
+            </object>
+        </child>
+    </object>
+</interface>

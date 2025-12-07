@@ -1,0 +1,20 @@
+.windowContent{
+    background-color: aqua;
+}
+
+.processSection{
+    background-color: magenta;
+}
+
+.processLabel{
+    padding: 4px;
+    margin: 4px;
+}
+
+.processListWindow{
+    background-color: violet;
+}
+
+.simulationSection{
+    background-color: pink;
+}
