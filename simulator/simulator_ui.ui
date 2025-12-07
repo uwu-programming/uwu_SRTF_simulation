@@ -33,6 +33,7 @@
                 <child>
                     <object id="addProcessButton" class="GtkButton">
                         <property name="label">Add process</property>
+                        <signal name="clicked" handler="addProcessButton__clicked"/>
                     </object>
                 </child>
             </object>
@@ -40,6 +41,7 @@
 
         <child>
             <object id="simulationSection" class="GtkBox">
+                <style><class name="simulationSection"/></style>
                 <child>
                     <object id="processorSection" class="GtkBox"></object>
                 </child>
