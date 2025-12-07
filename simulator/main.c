@@ -16,6 +16,11 @@ static GtkCssProvider* cssProvider;
 
 struct SimulatorUIController{
     GtkScrolledWindow* processListWindow;
+    gulong processListWindowHandlerID;
+    // save the scroll bar magnitude
+    GtkAdjustment* vAdjustment;
+    GtkAdjustment* hAdjustment;
+
     GtkListBox* processList;
 }uiController;
 /*___________________________________________________________________*/
@@ -40,8 +45,6 @@ void focusMainWindow(){
 }
 
 void addProcessWindowAddProcess(GtkWidget* widget, gpointer entry){
-    printf("addprocesswindowaddprocess: %s\n", gtk_entry_buffer_get_text(gtk_entry_get_buffer(entry)));
-
     const char* collectedEntryValue = gtk_entry_buffer_get_text(gtk_entry_get_buffer(entry));
     int collectedEntryValueLength = gtk_entry_get_text_length(entry);
 
@@ -113,24 +116,44 @@ void resetSimulator(){
     initializeSimulator();
 }
 
+void scrolleda(GtkAdjustment* adjust, gpointer userData){
+    printf("scrolleda: %f\n", gtk_adjustment_get_value(adjust));
+    uiController.vAdjustment = gtk_adjustment_new(gtk_adjustment_get_value(adjust), gtk_adjustment_get_lower(adjust), gtk_adjustment_get_upper(adjust), gtk_adjustment_get_step_increment(adjust), gtk_adjustment_get_page_increment(adjust), gtk_adjustment_get_page_size(adjust));
+}
+
 void initializeSimulator(){
     uiController.processListWindow = GTK_SCROLLED_WINDOW(gtk_builder_get_object(builder, "processListWindow"));
     uiController.processList = GTK_LIST_BOX(gtk_builder_get_object(builder, "processList"));
 
-    simulatorProcessScheduler = createProcessScheduler();
+    uiController.processListWindowHandlerID = g_signal_connect(gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(uiController.processListWindow)), "value-changed", G_CALLBACK(scrolleda), NULL);
+    uiController.vAdjustment = gtk_adjustment_new(0, 0, 0, 0, 0, 0);
+    printf("isconnect? %d\n", g_signal_handler_is_connected(gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(uiController.processListWindow)), uiController.processListWindowHandlerID));
+
+    simulatorProcessScheduler = createProcessScheduler(2, ON);
     simulatorAddProcess(simulatorProcessScheduler, "a+b");
     simulatorAddProcess(simulatorProcessScheduler, "e-f");
-    simulatorAddProcess(simulatorProcessScheduler, "a+b+c");
+    simulatorAddProcess(simulatorProcessScheduler, "a+b+c-d-e-f-g-h-i-j-k-l-m-n*o*p");
     simulatorAddProcess(simulatorProcessScheduler, "a/b");
+
+    for (int i = 0; i < 20; i++){
+        simulatorAddProcess(simulatorProcessScheduler, "hewwo");
+    }
 }
 
 void simulatorAddProcess(ProcessScheduler* processScheduler, expression infixExpression){
     addProcess(processScheduler, infixExpression);
+
+    updateProcessList();
 }
 
 gboolean updateProcessList(){
-    printf("updating\n");
+    printf("startofthis?\n");
+    GtkAdjustment* vAdjustment = uiController.vAdjustment;
+
+    g_signal_handler_disconnect(gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(uiController.processListWindow)), uiController.processListWindowHandlerID);
+    printf("beforeremove?\n");
     gtk_list_box_remove_all(uiController.processList);
+    printf("remove?\n");
     
     void* dummyCollector = simulatorProcessScheduler -> processList;
     while(((Node*)dummyCollector) -> next != NULL){
@@ -138,7 +161,13 @@ gboolean updateProcessList(){
         gtk_list_box_append(uiController.processList, gtk_label_new((*((Process**)(((Node*)dummyCollector) -> data))) -> dependencyInformation -> infixExpression));
         printf("%s\n", (*((Process**)(((Node*)dummyCollector) -> data))) -> dependencyInformation -> infixExpression);
     }
-    printf("done\n");
+
+    printf("isconnectb? %d\n", g_signal_handler_is_connected(gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(uiController.processListWindow)), uiController.processListWindowHandlerID));
+    printf("isconnecta? %d\n", g_signal_handler_is_connected(gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(uiController.processListWindow)), uiController.processListWindowHandlerID));
+    gtk_scrolled_window_set_vadjustment(uiController.processListWindow, vAdjustment);
+    uiController.vAdjustment = vAdjustment;
+    uiController.processListWindowHandlerID = g_signal_connect(gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(uiController.processListWindow)), "value-changed", G_CALLBACK(scrolleda), NULL);
+
     return TRUE;
 }
 

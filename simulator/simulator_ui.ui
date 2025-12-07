@@ -49,13 +49,25 @@
                 <property name="hexpand">TRUE</property>
 
                 <child>
-                    <object id="processorSection" class="GtkBox">
+                    <object id="processorDisplaySection" class="GtkBox">
                         <property name="vexpand">TRUE</property>
                         <property name="orientation">1</property>
 
                         <child>
                             <object id="" class="GtkLabel">
-                                <property name="label">top</property>
+                                <property name="label">Simulation</property>
+                            </object>
+                        </child>
+
+                        <child>
+                            <object id="progressDisplaySection" class="GtkScrolledWindow">
+                                <property name="vexpand">TRUE</property>
+
+                                <child>
+                                    <object id="progressDisplayList" class="GtkListBox">
+                                        <property name="selection-mode">0</property>
+                                    </object>
+                                </child>
                             </object>
                         </child>
                     </object>
