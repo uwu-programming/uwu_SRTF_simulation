@@ -40,8 +40,6 @@ void focusMainWindow(){
 }
 
 void addProcessWindowAddProcess(GtkWidget* widget, gpointer entry){
-    printf("addprocesswindowaddprocess: %s\n", gtk_entry_buffer_get_text(gtk_entry_get_buffer(entry)));
-
     const char* collectedEntryValue = gtk_entry_buffer_get_text(gtk_entry_get_buffer(entry));
     int collectedEntryValueLength = gtk_entry_get_text_length(entry);
 
@@ -117,19 +115,24 @@ void initializeSimulator(){
     uiController.processListWindow = GTK_SCROLLED_WINDOW(gtk_builder_get_object(builder, "processListWindow"));
     uiController.processList = GTK_LIST_BOX(gtk_builder_get_object(builder, "processList"));
 
-    simulatorProcessScheduler = createProcessScheduler();
+    simulatorProcessScheduler = createProcessScheduler(2, ON);
     simulatorAddProcess(simulatorProcessScheduler, "a+b");
     simulatorAddProcess(simulatorProcessScheduler, "e-f");
-    simulatorAddProcess(simulatorProcessScheduler, "a+b+c");
+    simulatorAddProcess(simulatorProcessScheduler, "a+b+c-d-e-f-g-h-i-j-k-l-m-n*o*p");
     simulatorAddProcess(simulatorProcessScheduler, "a/b");
+
+    for (int i = 0; i < 20; i++){
+        simulatorAddProcess(simulatorProcessScheduler, "hewwo");
+    }
 }
 
 void simulatorAddProcess(ProcessScheduler* processScheduler, expression infixExpression){
     addProcess(processScheduler, infixExpression);
+
+    updateProcessList();
 }
 
 gboolean updateProcessList(){
-    printf("updating\n");
     gtk_list_box_remove_all(uiController.processList);
     
     void* dummyCollector = simulatorProcessScheduler -> processList;
@@ -138,7 +141,7 @@ gboolean updateProcessList(){
         gtk_list_box_append(uiController.processList, gtk_label_new((*((Process**)(((Node*)dummyCollector) -> data))) -> dependencyInformation -> infixExpression));
         printf("%s\n", (*((Process**)(((Node*)dummyCollector) -> data))) -> dependencyInformation -> infixExpression);
     }
-    printf("done\n");
+
     return TRUE;
 }
 
@@ -158,7 +161,7 @@ static void activate(GtkApplication* app, gpointer user_data){
     initializeSimulator();
 
     g_timeout_add_seconds(1, updateProcessList, NULL);
-    
+
     gtk_window_present(GTK_WINDOW(window));
 }
 

@@ -22,3 +22,35 @@
 .simulatorConfigurationSection{
     background-color: slateblue;
 }
+
+/* timeframe section */
+.timeframeDummySection{
+    background: linear-gradient(
+        to left bottom,
+        #15EAC4 0%,
+        #15EAC4 50%,
+        #EA153B 50%,
+        #EA153B 100%
+    );
+}
+
+.timeframeListBox{
+    background-color: teal;
+}
+
+/* processor & gantt chart section */
+.processor_ganttchart_section{
+    background-color: crimson;
+}
+
+.processorListScrolledWindow{
+    background-color: darkgoldenrod;
+}
+
+.simulatorProcessorList{
+    background-color: tomato;
+}
+
+.simulatorGanttChart{
+    background-color: powderblue;
+}

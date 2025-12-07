@@ -27,7 +27,7 @@ struct ProcessScheduler{
     ProcessList* processList;
 };
 
-ProcessScheduler* createProcessScheduler();
+ProcessScheduler* createProcessScheduler(int processorCoreAmount, MultiThreadingSetting multiThreadingSetting);
 
 void addProcess(ProcessScheduler* processSceduler, expression infixExpression);
 
