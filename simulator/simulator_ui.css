@@ -46,3 +46,11 @@
 .processorListScrolledWindow{
     background-color: darkgoldenrod;
 }
+
+.simulatorProcessorList{
+    background-color: tomato;
+}
+
+.simulatorGanttChart{
+    background-color: powderblue;
+}

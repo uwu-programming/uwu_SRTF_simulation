@@ -131,12 +131,25 @@
                                         <style><class name="processorListScrolledWindow"/></style>
                                         <property name="width-request">160</property>
 
+                                        <child>
+                                            <object id="simulatorProcessorList" class="GtkListBox">
+                                                <style><class name="simulatorProcessorList"/></style>
+
+                                            </object>
+                                        </child>
                                     </object>
                                 </child>
 
                                 <!-- ganttchart progress list -->
                                 <child>
                                     <object class="GtkScrolledWindow">
+                                        <property name="hexpand">TRUE</property>
+
+                                        <child>
+                                            <object id="simulatorGanttChart" class="GtkListBox">
+                                                <style><class name="simulatorGanttChart"/></style>
+                                            </object>
+                                        </child>
                                     </object>
                                 </child>
                             </object>
