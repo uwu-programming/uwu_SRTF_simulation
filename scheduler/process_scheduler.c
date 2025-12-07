@@ -1,6 +1,5 @@
 #include "process_scheduler.h"
 #include "processor.h"
-#include <stdio.h>
 
 ProcessScheduler* createProcessScheduler(int processorCoreAmount, MultiThreadingSetting multiThreadingSetting){
     ProcessScheduler* processScheduler = malloc(sizeof(ProcessScheduler));

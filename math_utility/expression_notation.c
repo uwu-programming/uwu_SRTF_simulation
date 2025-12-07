@@ -2,7 +2,6 @@
 #include "stack.h"
 #include <string.h>
 #include <ctype.h>
-#include <stdio.h>
 #include <stdlib.h>
 
 expression removeSpaces(expression e){
