@@ -5,7 +5,7 @@
 #include "expression_notation.h"
 #include "process_scheduler.h"
 #include "processor.h"
-#include "process.h"
+#include "virtual_process.h"
 #include "process_data_dependency.h"
 
 /*___________________________________________________________________*/
@@ -133,13 +133,13 @@ void simulatorAddProcess(ProcessScheduler* processScheduler, expression infixExp
 }
 
 gboolean updateProcessList(){
+    printf("process amount: %d\n", simulatorProcessScheduler->processAmount);
     gtk_list_box_remove_all(uiController.processList);
     
     void* dummyCollector = simulatorProcessScheduler -> processList;
     while(((Node*)dummyCollector) -> next != NULL){
         dummyCollector = ((Node*)dummyCollector) -> next;
         gtk_list_box_append(uiController.processList, gtk_label_new((*((Process**)(((Node*)dummyCollector) -> data))) -> dependencyInformation -> infixExpression));
-        printf("%s\n", (*((Process**)(((Node*)dummyCollector) -> data))) -> dependencyInformation -> infixExpression);
     }
 
     return TRUE;
