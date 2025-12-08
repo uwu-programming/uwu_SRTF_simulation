@@ -9,12 +9,16 @@ typedef struct DependencyInformation DependencyInformation;
 struct DependencyInformation{
     expression infixExpression;
     expression prefixExpression;
+    expression updatedInfixExpression;
+    expression updatedPrefixExpression;
 
     operand currentNewVariable;
 
     int threadAmount;
     int dependencyAmount;
+
     Node* independentCalculationList;
+    Node* solvedIndependentCalculationList;
 };
 
 expression pickIndependentExpression(expression prefixExpression);
