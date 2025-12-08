@@ -45,7 +45,7 @@ struct ProcessorExecutionArgument{
 
 Processor* createProcessor(ProcessScheduler* parentScheduler, int processorID);
 
-void processorExecuteProcessThread(ProcessorExecutionArgument* processorExecutionArgument);
+void processorExecuteProcessThread(void* processorExecutionArgument);
 
 void processorAddProcessHistory(Processor* processor, ProcessHistory* processHistory);
 

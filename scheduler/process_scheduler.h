@@ -27,6 +27,8 @@ struct ProcessScheduler{
     MultiThreadingSetting multiThreadingSetting;
 
     ProcessorList* processorList;
+    Node* processorThreadList;
+
     int processAmount;
     ProcessList* processList;
 };

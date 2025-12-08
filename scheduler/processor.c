@@ -23,13 +23,16 @@ Processor* createProcessor(ProcessScheduler* parentScheduler, int processorID){
     return newProcessor;
 }
 
-void processorExecuteProcessThread(ProcessorExecutionArgument* processorExecutionArgument){    
-    Processor* processor = processorExecutionArgument -> processor;
-    Process* process = processorExecutionArgument -> process;
-    ExpressionInformation* executingExpression = processorExecutionArgument -> executingExpression;
-    TimeFrame startTime = processorExecutionArgument -> startTime;
-    TimeFrame endTime = processorExecutionArgument -> endTime;
+void processorExecuteProcessThread(void* processorExecutionArgument){    
+    printf("run\n");
+    Processor* processor = ((ProcessorExecutionArgument*)(processorExecutionArgument)) -> processor;
+    Process* process = ((ProcessorExecutionArgument*)(processorExecutionArgument)) -> process;
+    ExpressionInformation* executingExpression = ((ProcessorExecutionArgument*)(processorExecutionArgument)) -> executingExpression;
+    TimeFrame startTime = ((ProcessorExecutionArgument*)(processorExecutionArgument)) -> startTime;
+    TimeFrame endTime = ((ProcessorExecutionArgument*)(processorExecutionArgument)) -> endTime;
     
+    process -> processState = RUNNING;
+
     processor -> startTime = startTime;
     processor -> endTime = endTime;
     
@@ -53,12 +56,10 @@ void processorExecuteProcessThread(ProcessorExecutionArgument* processorExecutio
 
     // lock the executed thread's parent process to modify its data
     pthread_mutex_lock(&(process -> m_processData));
-    printf("locked\n");
 
     (process -> remainingBurstTime)--; // reduce its remaining burst time by 1
     executingExpression -> expressionRepresentation[0] = process -> dependencyInformation -> currentNewVariable[0]; // present the executed expression as a new variable
     process -> dependencyInformation -> currentNewVariable[0] = ((int)(process -> dependencyInformation -> currentNewVariable[0])) + 1;
-    printf("deduct burst time\n");
 
     // update the process' DependencyInformation -  updatedPrefixExpression for presenting the original expression with new operand representation
     expression updatedPrefixExpression = process -> dependencyInformation -> updatedPrefixExpression;
@@ -87,6 +88,25 @@ void processorExecuteProcessThread(ProcessorExecutionArgument* processorExecutio
 
     ProcessHistory* newProcessHistory = createProcessHistory(process, executingExpression, startTime, endTime);
     processorAddProcessHistory(processor, newProcessHistory);
+
+    void* dummyCollector = NULL;
+    linkedListAddNext(process -> dependencyInformation -> solvedIndependentCalculationList, sizeof(executingExpression), (void*)(&dummyCollector));
+    *((ExpressionInformation**)(executingExpression)) = executingExpression;
+
+    process -> dependencyInformation -> independentCalculationList = getIndependentCalculation(process -> dependencyInformation -> updatedPrefixExpression);
+    process -> dependencyInformation -> threadAmount = calculateThread(process -> dependencyInformation -> updatedPrefixExpression);
+    process -> dependencyInformation -> dependencyAmount = calculateDependency(process -> dependencyInformation -> updatedPrefixExpression);
+    printf("thread amoung:%d\n", process -> dependencyInformation -> threadAmount);
+    if (process -> dependencyInformation -> threadAmount <= 0){
+        process -> processState = TERMINATED;
+    }else {
+        process -> processState = READY;
+    }
+    dummyCollector = process -> dependencyInformation -> independentCalculationList;
+    while (((Node*)dummyCollector) -> next != NULL){
+        dummyCollector = ((Node*)dummyCollector) -> next;
+        printf("c: %s\n", (*((ExpressionInformation**)(((Node*)dummyCollector) -> data))) -> prefixExpression);
+    }
 
     // unlock the process' mutex after finishing modifying the data so other thread can access it
     pthread_mutex_unlock(&(process -> m_processData));

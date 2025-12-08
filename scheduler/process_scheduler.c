@@ -13,12 +13,18 @@ ProcessScheduler* createProcessScheduler(int processorCoreAmount, MultiThreading
 
     void* dummyCollector = NULL;
     processScheduler -> processorList = createNode(sizeof(Processor*), (void*)(&dummyCollector));
+    processScheduler -> processorThreadList = createNode(sizeof(pthread_t), (void*)(&dummyCollector));
 
+    // create processor and thread for processor
     for (int i = processorCoreAmount; i > 0; i--){
         Processor* newProcessor = createProcessor(processScheduler, i);
 
         linkedListAddNext(processScheduler -> processorList, sizeof(newProcessor), (void*)(&dummyCollector));
         *((Processor**)(dummyCollector)) = newProcessor;
+
+        pthread_t* newProcessorThread =  malloc(sizeof(pthread_t));
+        linkedListAddNext(processScheduler -> processorThreadList, sizeof(newProcessorThread), (void*)(&dummyCollector));
+        *((pthread_t**)(dummyCollector)) = newProcessorThread;
     }
 
     processScheduler -> processAmount = 0;
@@ -94,14 +100,13 @@ void processSchedulerNextTimeframe(ProcessScheduler* processScheduler){
     
     Node* dummyProcessNode = NULL;
     Node* dummyProcessorNode = NULL;
+    Node* dummyProcessorThreadNode = NULL;
+    Node* dummyProcessorThreadNode2 = NULL;
+    int processorUsed = 0;
     dummyProcessNode = processScheduler -> processList;
     dummyProcessorNode = processScheduler -> processorList;
-
-    // test print
-    // while(dummyProcessorNode->next != NULL){
-    //     dummyProcessorNode = dummyProcessorNode -> next;
-    //     printf("core: %d\n", (*(Processor**)(dummyProcessorNode -> data)) -> processorID);
-    // }
+    dummyProcessorThreadNode = processScheduler -> processorThreadList;
+    dummyProcessorThreadNode2 = processScheduler -> processorThreadList;
 
     // check if there is any process that need to be executed, and if there is available processor for the process
     while (dummyProcessNode -> next != NULL && dummyProcessorNode -> next != NULL){
@@ -113,8 +118,6 @@ void processSchedulerNextTimeframe(ProcessScheduler* processScheduler){
             Node* independentCalculationNode = processDependency -> independentCalculationList;
 
             while(independentCalculationNode -> next != NULL){
-                printf("new calculation\n");
-
                 independentCalculationNode = independentCalculationNode -> next;
                 ExpressionInformation* executingExpression = *(ExpressionInformation**)(independentCalculationNode -> data);
                 printf("expression: %s\n", executingExpression -> prefixExpression);
@@ -126,6 +129,7 @@ void processSchedulerNextTimeframe(ProcessScheduler* processScheduler){
                         independentCalculationNode -> next -> previous = independentCalculationNode -> previous;
 
                     dummyProcessorNode = dummyProcessorNode -> next;
+                    processorUsed++;
                     ProcessorExecutionArgument* processorExecutionArgument = malloc(sizeof(ProcessorExecutionArgument));
                     processorExecutionArgument -> processor = *((Processor**)(dummyProcessorNode -> data));
                     processorExecutionArgument -> process = (*(Process**)(dummyProcessNode -> data));
@@ -133,12 +137,19 @@ void processSchedulerNextTimeframe(ProcessScheduler* processScheduler){
                     processorExecutionArgument -> startTime = processScheduler -> currentTimeFrame;
                     processorExecutionArgument -> endTime = processScheduler -> currentTimeFrame + 1;
 
-                    processorExecuteProcessThread(processorExecutionArgument);
+                    // create a thread for processor to run the thread execution simulation
+                    dummyProcessorThreadNode = dummyProcessorThreadNode -> next;
+                    pthread_create(*((pthread_t**)(dummyProcessorThreadNode -> data)), NULL, (void*)(processorExecuteProcessThread), (void*)(processorExecutionArgument));
                 }
-                printf("done executed\n");
             }
         }
     }
 
+    for (int i = 0; i < processorUsed; i++){
+        dummyProcessorThreadNode2 = dummyProcessorThreadNode2 -> next;
+        pthread_join(**((pthread_t**)(dummyProcessorThreadNode -> data)), NULL);
+    }
+
+    processScheduler -> currentTimeFrame++;
     pthread_mutex_unlock(&(processScheduler -> m_processSchedulerData));
 }
