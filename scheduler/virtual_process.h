@@ -2,6 +2,8 @@
 #define __PROCESS__
 
 #include "process_data_dependency.h"
+#include "expression_notation.h"
+#include <pthread.h>
 
 typedef enum PROCESS_STATE ProcessState;
 typedef struct Process Process;
@@ -18,12 +20,16 @@ enum PROCESS_STATE{
 };
 
 struct Process{
+    // mutex for protecting Process' data being overwritten by other thread when it is accessing the data itself
+    pthread_mutex_t m_processData;
+
     ProcessState processState;
     int processID;
 
     // the information of the process (the expression's information)
     DependencyInformation* dependencyInformation;
     TimeFrame arrivalTime;
+    TimeFrame completionTime;
     ProcessTime initialBurstTime;
     ProcessTime remainingBurstTime;
     ProcessTime waitingTime;
@@ -32,12 +38,14 @@ struct Process{
 struct ProcessHistory{
     Process* executedProcess;
 
-    expression executedExpression;
+    ExpressionInformation* executedExpression;
     
     TimeFrame timeStart;
     TimeFrame timeEnd;
 };
 
 Process* createProcess(expression infixExpression, int processID, TimeFrame arrivalTime);
+
+ProcessHistory* createProcessHistory(Process* executedProcess, ExpressionInformation* executedExpression, TimeFrame timeStart, TimeFrame timeEnd);
 
 #endif
