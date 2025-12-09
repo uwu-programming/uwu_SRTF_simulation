@@ -54,7 +54,7 @@ void processorExecuteProcessThread(void* processorExecutionArgument){
     }
 
     // lock the executed thread's parent process to modify its data
-    pthread_mutex_lock(&(process -> m_processData));
+    //pthread_mutex_lock(&(process -> m_processData));
 
     (process -> remainingBurstTime)--; // reduce its remaining burst time by 1
     executingExpression -> expressionRepresentation[0] = process -> dependencyInformation -> currentNewVariable[0]; // present the executed expression as a new variable
@@ -104,7 +104,7 @@ void processorExecuteProcessThread(void* processorExecutionArgument){
     }
 
     // unlock the process' mutex after finishing modifying the data so other thread can access it
-    pthread_mutex_unlock(&(process -> m_processData));
+    //pthread_mutex_unlock(&(process -> m_processData));
 }
 
 void processorAddProcessHistory(Processor* processor, ProcessHistory* processHistory){

@@ -6,6 +6,8 @@
 ProcessScheduler* createProcessScheduler(int processorCoreAmount, MultiThreadingSetting multiThreadingSetting){
     ProcessScheduler* processScheduler = malloc(sizeof(ProcessScheduler));
     
+    processScheduler -> m_processSchedulerData = (pthread_t)(pthread_t*)(malloc(sizeof(pthread_t)));
+
     processScheduler -> currentTimeFrame = 0;
 
     processScheduler -> processorCoreAmount = processorCoreAmount;
@@ -59,7 +61,9 @@ void sortProcessPriority(ProcessScheduler* processScheduler){
         while (((Node*)dummyJ) -> next != NULL){
             dummyJ = ((Node*)dummyJ) -> next;
 
-            if ((*(Process**)(((Node*)dummyJ) -> data)) -> remainingBurstTime < hoveringBurstTime){
+            printf("comp: %s\n", (*(Process**)(((Node*)dummyJ) -> data)) -> dependencyInformation -> prefixExpression);
+
+            if ((*(Process**)(((Node*)dummyJ) -> data)) -> remainingBurstTime < hoveringBurstTime && (*(Process**)(((Node*)dummyJ) -> data)) -> processState != TERMINATED){
                 ((Node*)dummyJ) -> previous -> next = ((Node*)dummyJ) -> next;
                 ((Node*)dummyJ) -> next -> previous = ((Node*)dummyJ) -> previous;
 
@@ -67,15 +71,19 @@ void sortProcessPriority(ProcessScheduler* processScheduler){
                 ((Node*)dummyJ) -> next = ((Node*)dummyI);
                 ((Node*)dummyJ) -> previous = ((Node*)dummyI) -> previous;
                 ((Node*)dummyI) -> previous = (Node*)dummyJ;
+                printf("sorting\n");
             }
         }
+        printf("after comp?\n");
     }
 }
 
 void processSchedulerNextTimeframe(ProcessScheduler* processScheduler){
     printf("next frame\n");
     // lock the process scheduler's data and sort the priority of its processes
-    pthread_mutex_lock(&(processScheduler -> m_processSchedulerData));
+    //printf("trying lock: %d\t", processScheduler -> m_processSchedulerData);
+    //pthread_mutex_lock(&(processScheduler -> m_processSchedulerData));
+    printf("locked\n");
 
     sortProcessPriority(processScheduler);
     printf("done sort\n");
@@ -105,10 +113,13 @@ void processSchedulerNextTimeframe(ProcessScheduler* processScheduler){
                 printf("expression: %s\n", executingExpression -> prefixExpression);
 
                 if (dummyProcessorNode -> next != NULL){
+                    printf("processor?\n");
                     // remove the executed expression from the process' DependencyInformation's independentCalculationList
                     independentCalculationNode -> previous -> next = independentCalculationNode -> next;
                     if (independentCalculationNode -> next != NULL)
                         independentCalculationNode -> next -> previous = independentCalculationNode -> previous;
+
+                    printf("after i\n");
 
                     dummyProcessorNode = dummyProcessorNode -> next;
                     processorUsed++;
@@ -132,14 +143,19 @@ void processSchedulerNextTimeframe(ProcessScheduler* processScheduler){
     // add waiting time for processes who didn't get assigned to a processor
     while (dummyProcessNode -> next != NULL){
         dummyProcessNode = dummyProcessNode -> next;
-        (*(Process**)(dummyProcessNode -> data)) -> waitingTime++;
+        if ((*(Process**)(dummyProcessNode -> data)) -> processState != TERMINATED)
+            (*(Process**)(dummyProcessNode -> data)) -> waitingTime++;
     }
 
-    for (int i = 0; i < processorUsed; i++){
-        dummyProcessorThreadNode2 = dummyProcessorThreadNode2 -> next;
-        pthread_join(**((pthread_t**)(dummyProcessorThreadNode -> data)), NULL);
-    }
+    printf("+waiting time?\n");
+
+    // for (int i = 0; i < processorUsed; i++){
+    //     dummyProcessorThreadNode2 = dummyProcessorThreadNode2 -> next;
+    //     pthread_join(**((pthread_t**)(dummyProcessorThreadNode -> data)), NULL);
+    // }
+    printf("joined?\n");
 
     processScheduler -> currentTimeFrame++;
-    pthread_mutex_unlock(&(processScheduler -> m_processSchedulerData));
+    //pthread_mutex_unlock(&(processScheduler -> m_processSchedulerData));
+    printf("unlock\n");
 }

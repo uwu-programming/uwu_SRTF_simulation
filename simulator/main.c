@@ -63,6 +63,7 @@ void addProcessWindowAddProcess(GtkWidget* widget, gpointer entry){
 
     simulatorAddProcess(simulatorProcessScheduler, infixExpression);
 
+    updateLabelDisplay();
     gtk_window_close(GTK_WINDOW(addProcessWindow));
 }
 
@@ -71,6 +72,7 @@ void closeAddProcessWindow(){
 }
 
 G_MODULE_EXPORT void addProcessButton__clicked(GtkButton* button, gpointer data){
+    printf("run?\n");
     gtk_widget_set_sensitive(window, FALSE);
 
     addProcessWindow = gtk_window_new();
@@ -190,13 +192,14 @@ gboolean updateProcessList(){
 
 // update the displaying number of core & timeframe
 gboolean updateLabelDisplay(){
-    pthread_mutex_lock(&(simulatorProcessScheduler -> m_processSchedulerData));
+    updateSimulatorProcessScheduler();
 
     gtk_label_set_label(uiController.numberOfProcessorLabel, intToString(simulatorProcessScheduler -> processorCoreAmount));
     gtk_label_set_label(uiController.currentTimeframeLabel, intToString(simulatorProcessScheduler -> currentTimeFrame));
-
-    pthread_mutex_unlock(&(simulatorProcessScheduler -> m_processSchedulerData));
     
+    printf("update?\n");
+    //updateProcessList();
+
     return TRUE;
 }
 
@@ -205,15 +208,6 @@ gboolean updateSimulatorProcessScheduler(){
     processSchedulerNextTimeframe(simulatorProcessScheduler);
 
     return TRUE;
-}
-
-void constupdate(){
-    //g_timeout_add_seconds(1, updateSimulatorProcessScheduler, NULL);
-    clock_t delay = clock() + 1000;
-    while (clock() < delay);
-
-    updateSimulatorProcessScheduler();
-    constupdate();
 }
 /*___________________________________________________________________*/
 
@@ -236,7 +230,7 @@ static void activate(GtkApplication* app, gpointer user_data){
     gtk_window_present(GTK_WINDOW(window));
 
     //g_timeout_add_seconds(1, updateSimulatorProcessScheduler, NULL);
-    g_timeout_add_seconds(1, updateProcessList, NULL);
+    //g_timeout_add_seconds(1, updateProcessList, NULL);
     g_timeout_add_seconds(1, updateLabelDisplay, NULL);
 }
 
