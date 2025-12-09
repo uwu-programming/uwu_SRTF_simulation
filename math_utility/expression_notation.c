@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 expression removeSpaces(expression e){
     int spaces = 0;
@@ -133,6 +134,9 @@ ExpressionInformation* createExpressionInformation(expression independentExpress
     }
     expressionInformation -> prefixExpression[3] = '\0';
 
+    expressionInformation -> operandAValue = 1;
+    expressionInformation -> operandBValue = 1;
+
     expressionInformation -> operandA = malloc(sizeof(char) * 2);
     expressionInformation -> operandB = malloc(sizeof(char) * 2);
 
@@ -148,7 +152,9 @@ ExpressionInformation* createExpressionInformation(expression independentExpress
     expressionInformation -> expressionAnswer = 0;
 
     expressionInformation -> operandOverwrite = malloc(sizeof(char) * 2);
-    expressionInformation -> expressionRepresentation = NULL;
+    expressionInformation -> expressionRepresentation = malloc(sizeof(char) * 2);
+    expressionInformation -> operandOverwrite[1] = '\0';
+    expressionInformation -> expressionRepresentation[1] = '\0';
 
     return expressionInformation;
 }

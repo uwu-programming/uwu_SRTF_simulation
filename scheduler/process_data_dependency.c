@@ -65,6 +65,8 @@ Node* getIndependentCalculation(expression prefixExpression){
 DependencyInformation* createDepenencyInformation(expression infixExpression){
     DependencyInformation* dependencyInformation = malloc(sizeof(DependencyInformation));
 
+    void* dummyCollector;
+
     dependencyInformation -> infixExpression = malloc(sizeof(char) * (strlen(infixExpression) + 1));
     for (int i = 0; i < strlen(infixExpression); i++){
         dependencyInformation -> infixExpression[i] = infixExpression[i];
@@ -73,13 +75,22 @@ DependencyInformation* createDepenencyInformation(expression infixExpression){
 
     dependencyInformation -> prefixExpression = infixToPrefix(dependencyInformation -> infixExpression);
 
+    dependencyInformation -> updatedInfixExpression = malloc(sizeof(char) * (strlen(infixExpression) + 1));
+    dependencyInformation -> updatedPrefixExpression = malloc(sizeof(char) * (strlen(dependencyInformation -> prefixExpression) + 1));
+    for (int i = 0; i < strlen(dependencyInformation -> prefixExpression); i++){
+        dependencyInformation -> updatedPrefixExpression[i] = dependencyInformation -> prefixExpression[i];
+    }
+    dependencyInformation -> updatedPrefixExpression[strlen(dependencyInformation -> prefixExpression)] = '\0';
+
     dependencyInformation -> currentNewVariable = malloc(sizeof(char) * 2);
     dependencyInformation -> currentNewVariable[0] = 'A';
     dependencyInformation -> currentNewVariable[1] = '\0';
 
     dependencyInformation -> threadAmount = calculateThread(dependencyInformation -> prefixExpression);
     dependencyInformation -> dependencyAmount = calculateDependency(dependencyInformation -> prefixExpression);
+    
     dependencyInformation -> independentCalculationList = getIndependentCalculation(dependencyInformation -> prefixExpression);
+    dependencyInformation -> solvedIndependentCalculationList = createNode(sizeof(ExpressionInformation*), (void*)(&dummyCollector));
 
     return dependencyInformation;
 }
