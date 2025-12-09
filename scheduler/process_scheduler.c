@@ -56,7 +56,6 @@ void sortProcessPriority(ProcessScheduler* processScheduler){
         dummyI = ((Node*)dummyI) -> next;
         dummyJ = dummyI;
         hoveringBurstTime = (*(Process**)(((Node*)dummyI) -> data)) -> remainingBurstTime;
-        printf("exp: %s\n", (*(Process**)(((Node*)dummyI) -> data)) ->dependencyInformation->prefixExpression);
 
         while (((Node*)dummyJ) -> next != NULL){
             dummyJ = ((Node*)dummyJ) -> next;
@@ -76,19 +75,14 @@ void sortProcessPriority(ProcessScheduler* processScheduler){
                 ((Node*)dummyI) -> previous = (Node*)dummyJ;
             }
         }
-        printf("after comp?\n");
     }
 }
 
 void processSchedulerNextTimeframe(ProcessScheduler* processScheduler){
-    printf("next frame\n");
     // lock the process scheduler's data and sort the priority of its processes
-    //printf("trying lock: %d\t", processScheduler -> m_processSchedulerData);
     //pthread_mutex_lock(&(processScheduler -> m_processSchedulerData));
-    printf("locked\n");
 
     sortProcessPriority(processScheduler);
-    printf("done sort\n");
 
     Node* dummyProcessNode = NULL;
     Node* dummyProcessorNode = NULL;
@@ -115,13 +109,10 @@ void processSchedulerNextTimeframe(ProcessScheduler* processScheduler){
                 printf("expression: %s\n", executingExpression -> prefixExpression);
 
                 if (dummyProcessorNode -> next != NULL){
-                    printf("processor?\n");
                     // remove the executed expression from the process' DependencyInformation's independentCalculationList
                     independentCalculationNode -> previous -> next = independentCalculationNode -> next;
                     if (independentCalculationNode -> next != NULL)
                         independentCalculationNode -> next -> previous = independentCalculationNode -> previous;
-
-                    printf("after i\n");
 
                     dummyProcessorNode = dummyProcessorNode -> next;
                     processorUsed++;
@@ -136,7 +127,6 @@ void processSchedulerNextTimeframe(ProcessScheduler* processScheduler){
                     dummyProcessorThreadNode = dummyProcessorThreadNode -> next;
                     //pthread_create(*((pthread_t**)(dummyProcessorThreadNode -> data)), NULL, (void*)(processorExecuteProcessThread), (void*)(processorExecutionArgument));
                     processorExecuteProcessThread((void*) processorExecutionArgument);
-                    printf("created thread?\n");
                 }
             }
         }
@@ -149,16 +139,12 @@ void processSchedulerNextTimeframe(ProcessScheduler* processScheduler){
             (*(Process**)(dummyProcessNode -> data)) -> waitingTime++;
     }
 
-    printf("+waiting time?\n");
-
     // for (int i = 0; i < processorUsed; i++){
     //     dummyProcessorThreadNode2 = dummyProcessorThreadNode2 -> next;
     //     printf("try join: %d\n", **((pthread_t**)(dummyProcessorThreadNode2 -> data)));
     //     pthread_join(**((pthread_t**)(dummyProcessorThreadNode2 -> data)), NULL);
     // }
-    printf("joined?\n");
-
+    
     processScheduler -> currentTimeFrame++;
     //pthread_mutex_unlock(&(processScheduler -> m_processSchedulerData));
-    printf("unlock\n");
 }

@@ -198,7 +198,7 @@ gboolean updateLabelDisplay(){
     gtk_label_set_label(uiController.currentTimeframeLabel, intToString(simulatorProcessScheduler -> currentTimeFrame));
     
     printf("update?\n");
-    //updateProcessList();
+    updateProcessList();
 
     return TRUE;
 }
