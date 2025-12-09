@@ -187,4 +187,5 @@ void main(){
     // processSchedulerNextTimeframe(secondScheduler);
     // processSchedulerNextTimeframe(secondScheduler);
 
+    printf("done\n");
 }

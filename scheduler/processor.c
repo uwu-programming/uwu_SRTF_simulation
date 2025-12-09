@@ -83,8 +83,6 @@ void processorExecuteProcessThread(void* processorExecutionArgument){
     }
     process -> dependencyInformation -> updatedPrefixExpression[strlen(updatedPrefixExpression) - 2] = '\0';
 
-    printf("updated prefix: %s\n", process -> dependencyInformation -> updatedPrefixExpression);
-
     ProcessHistory* newProcessHistory = createProcessHistory(process, executingExpression, startTime, endTime);
     processorAddProcessHistory(processor, newProcessHistory);
 

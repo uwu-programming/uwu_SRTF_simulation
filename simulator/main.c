@@ -19,6 +19,10 @@ struct SimulatorUIController{
     GtkScrolledWindow* processListWindow;
     GtkListBox* processList;
 
+    GtkBox* timeframeList;
+    GtkListBox* simulatorProcessorList;
+    GtkListBox* simulatorGanttChart;
+
     GtkLabel* numberOfProcessorLabel;
     GtkLabel* currentTimeframeLabel;
 
@@ -38,6 +42,9 @@ void initializeSimulator();
 void simulatorAddProcess(ProcessScheduler* processScheduler, expression infixExpression);
 
 gboolean updateProcessList();
+gboolean updateProcessorList();
+gboolean updateProcessorList();
+gboolean updateGanttChart();
 gboolean updateLabelDisplay();
 gboolean updateSimulatorProcessScheduler();
 
@@ -72,7 +79,6 @@ void closeAddProcessWindow(){
 }
 
 G_MODULE_EXPORT void addProcessButton__clicked(GtkButton* button, gpointer data){
-    printf("run?\n");
     gtk_widget_set_sensitive(window, FALSE);
 
     addProcessWindow = gtk_window_new();
@@ -155,6 +161,7 @@ void initializeSimulator(){
 
     uiController.processListWindow = GTK_SCROLLED_WINDOW(gtk_builder_get_object(builder, "processListWindow"));
     uiController.processList = GTK_LIST_BOX(gtk_builder_get_object(builder, "processList"));
+    uiController.timeframeList = GTK_BOX(gtk_builder_get_object(builder, "timeframeListBox"));
 
     simulatorProcessScheduler = createProcessScheduler(2, ON);
     simulatorAddProcess(simulatorProcessScheduler, "(x+y)*(a+b)");
@@ -177,8 +184,6 @@ void simulatorAddProcess(ProcessScheduler* processScheduler, expression infixExp
 // thread task
 // update the displaying process list
 gboolean updateProcessList(){
-    printf("process amount: %d\n", simulatorProcessScheduler->processAmount);
-
     gtk_list_box_remove_all(uiController.processList);
     
     void* dummyCollector = simulatorProcessScheduler -> processList;
@@ -190,22 +195,50 @@ gboolean updateProcessList(){
     return TRUE;
 }
 
+gboolean updateProcessorList(){
+
+}
+
+gboolean updateGanttChart(){
+
+}
+
+gboolean updateTimeframeList(){
+    GtkWidget* timeFrameListChild = gtk_widget_get_first_child(GTK_WIDGET(uiController.timeframeList));
+    while (timeFrameListChild != NULL){
+        gtk_box_remove(uiController.timeframeList, timeFrameListChild);
+        timeFrameListChild = gtk_widget_get_first_child(GTK_WIDGET(uiController.timeframeList));
+    }
+
+    for (int i = 0; i < simulatorProcessScheduler -> currentTimeFrame; i++){
+        GtkBox* newTimeframeBox = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0));
+        GtkLabel* newTimeframeStartLabel = GTK_LABEL(gtk_label_new(intToString(i)));
+        GtkLabel* newTimeframeEndLabel = GTK_LABEL(gtk_label_new(intToString(i+1)));
+
+        gtk_widget_set_size_request(GTK_WIDGET(newTimeframeBox), 160, 80);
+        gtk_box_set_homogeneous(newTimeframeBox, TRUE);
+        gtk_label_set_xalign(newTimeframeStartLabel, 0.1);
+        gtk_label_set_xalign(newTimeframeEndLabel, 0.9);
+
+        gtk_box_append(newTimeframeBox, GTK_WIDGET(newTimeframeStartLabel));
+        gtk_box_append(newTimeframeBox, GTK_WIDGET(newTimeframeEndLabel));
+
+        gtk_box_append(uiController.timeframeList, GTK_WIDGET(newTimeframeBox));
+    }
+}
+
 // update the displaying number of core & timeframe
 gboolean updateLabelDisplay(){
-    updateSimulatorProcessScheduler();
-
     gtk_label_set_label(uiController.numberOfProcessorLabel, intToString(simulatorProcessScheduler -> processorCoreAmount));
     gtk_label_set_label(uiController.currentTimeframeLabel, intToString(simulatorProcessScheduler -> currentTimeFrame));
     
-    printf("update?\n");
-    updateProcessList();
-
     return TRUE;
 }
 
 // update process scheduler (update and go to next timeframe)
 gboolean updateSimulatorProcessScheduler(){
-    processSchedulerNextTimeframe(simulatorProcessScheduler);
+    if (uiController.autoSimulation || TRUE)
+        processSchedulerNextTimeframe(simulatorProcessScheduler);
 
     return TRUE;
 }
@@ -229,8 +262,9 @@ static void activate(GtkApplication* app, gpointer user_data){
 
     gtk_window_present(GTK_WINDOW(window));
 
-    //g_timeout_add_seconds(1, updateSimulatorProcessScheduler, NULL);
-    //g_timeout_add_seconds(1, updateProcessList, NULL);
+    g_timeout_add_seconds(1, updateSimulatorProcessScheduler, NULL);
+    g_timeout_add_seconds(1, updateProcessList, NULL);
+    g_timeout_add_seconds(1, updateTimeframeList, NULL);
     g_timeout_add_seconds(1, updateLabelDisplay, NULL);
 }
 

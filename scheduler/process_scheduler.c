@@ -60,9 +60,6 @@ void sortProcessPriority(ProcessScheduler* processScheduler){
         while (((Node*)dummyJ) -> next != NULL){
             dummyJ = ((Node*)dummyJ) -> next;
 
-            //printf("comp: %s\n", (*(Process**)(((Node*)dummyJ) -> data)) -> dependencyInformation -> prefixExpression);
-            //printf("remaining b: %d : %d\n", (*(Process**)(((Node*)dummyJ) -> data)) -> remainingBurstTime, hoveringBurstTime);
-
             if ((*(Process**)(((Node*)dummyJ) -> data)) -> remainingBurstTime < hoveringBurstTime && (*(Process**)(((Node*)dummyJ) -> data)) -> processState != TERMINATED){
                 ((Node*)dummyJ) -> previous -> next = ((Node*)dummyJ) -> next;
 
@@ -106,7 +103,6 @@ void processSchedulerNextTimeframe(ProcessScheduler* processScheduler){
             while(independentCalculationNode -> next != NULL){
                 independentCalculationNode = independentCalculationNode -> next;
                 ExpressionInformation* executingExpression = *(ExpressionInformation**)(independentCalculationNode -> data);
-                printf("expression: %s\n", executingExpression -> prefixExpression);
 
                 if (dummyProcessorNode -> next != NULL){
                     // remove the executed expression from the process' DependencyInformation's independentCalculationList
@@ -144,7 +140,7 @@ void processSchedulerNextTimeframe(ProcessScheduler* processScheduler){
     //     printf("try join: %d\n", **((pthread_t**)(dummyProcessorThreadNode2 -> data)));
     //     pthread_join(**((pthread_t**)(dummyProcessorThreadNode2 -> data)), NULL);
     // }
-    
+
     processScheduler -> currentTimeFrame++;
     //pthread_mutex_unlock(&(processScheduler -> m_processSchedulerData));
 }
