@@ -20,7 +20,7 @@ struct SimulatorUIController{
     GtkListBox* processList;
 
     GtkBox* timeframeList;
-    GtkListBox* simulatorProcessorList;
+    GtkBox* simulatorProcessorList;
     GtkListBox* simulatorGanttChart;
 
     GtkLabel* numberOfProcessorLabel;
@@ -161,6 +161,7 @@ void initializeSimulator(){
 
     uiController.processListWindow = GTK_SCROLLED_WINDOW(gtk_builder_get_object(builder, "processListWindow"));
     uiController.processList = GTK_LIST_BOX(gtk_builder_get_object(builder, "processList"));
+    uiController.simulatorProcessorList = GTK_BOX(gtk_builder_get_object(builder, "simulatorProcessorList"));
     uiController.timeframeList = GTK_BOX(gtk_builder_get_object(builder, "timeframeListBox"));
 
     simulatorProcessScheduler = createProcessScheduler(2, ON);
@@ -187,7 +188,7 @@ gboolean updateProcessList(){
     gtk_list_box_remove_all(uiController.processList);
     
     void* dummyCollector = simulatorProcessScheduler -> processList;
-    while(((Node*)dummyCollector) -> next != NULL){
+    while (((Node*)dummyCollector) -> next != NULL){
         dummyCollector = ((Node*)dummyCollector) -> next;
         gtk_list_box_append(uiController.processList, gtk_label_new((*((Process**)(((Node*)dummyCollector) -> data))) -> dependencyInformation -> infixExpression));
     }
@@ -196,7 +197,30 @@ gboolean updateProcessList(){
 }
 
 gboolean updateProcessorList(){
+    GtkWidget* processorListChild = gtk_widget_get_first_child(GTK_WIDGET(uiController.simulatorProcessorList));
+    while (processorListChild != NULL){
+        gtk_box_remove(uiController.simulatorProcessorList, processorListChild);
+        processorListChild = gtk_widget_get_first_child(GTK_WIDGET(uiController.simulatorProcessorList));
+    }
 
+    for (int i = 0; i < simulatorProcessScheduler -> processorCoreAmount; i++){
+        GtkBox* newProcessorBox = GTK_BOX(gtk_box_new(GTK_ORIENTATION_VERTICAL, 0));
+        GtkLabel* newProcessorLabel = GTK_LABEL(gtk_label_new(intToString(i+1)));
+
+        gtk_widget_add_css_class(GTK_WIDGET(newProcessorBox), "processorBox");
+        gtk_widget_add_css_class(GTK_WIDGET(newProcessorLabel), "processorLabel");
+
+        gtk_widget_set_vexpand(GTK_WIDGET(newProcessorBox), TRUE);
+        gtk_box_set_homogeneous(newProcessorBox, TRUE);
+        gtk_widget_set_valign(GTK_WIDGET(newProcessorBox), GTK_ALIGN_CENTER);
+        gtk_widget_set_size_request(GTK_WIDGET(newProcessorBox), 160, 160);
+
+        gtk_box_append(newProcessorBox, GTK_WIDGET(newProcessorLabel));
+
+        gtk_box_append(uiController.simulatorProcessorList, GTK_WIDGET(newProcessorBox));
+    }
+
+    return TRUE;
 }
 
 gboolean updateGanttChart(){
@@ -264,6 +288,7 @@ static void activate(GtkApplication* app, gpointer user_data){
 
     g_timeout_add_seconds(1, updateSimulatorProcessScheduler, NULL);
     g_timeout_add_seconds(1, updateProcessList, NULL);
+    g_timeout_add_seconds(1, updateProcessorList, NULL);
     g_timeout_add_seconds(1, updateTimeframeList, NULL);
     g_timeout_add_seconds(1, updateLabelDisplay, NULL);
 }

@@ -51,6 +51,14 @@
     background-color: tomato;
 }
 
+.processorBox{
+    background-color: #EA153B;
+}
+
+.processorLabel{
+    background-color: springgreen;
+}
+
 .simulatorGanttChart{
     background-color: powderblue;
 }
