@@ -61,17 +61,19 @@ void sortProcessPriority(ProcessScheduler* processScheduler){
         while (((Node*)dummyJ) -> next != NULL){
             dummyJ = ((Node*)dummyJ) -> next;
 
-            printf("comp: %s\n", (*(Process**)(((Node*)dummyJ) -> data)) -> dependencyInformation -> prefixExpression);
+            //printf("comp: %s\n", (*(Process**)(((Node*)dummyJ) -> data)) -> dependencyInformation -> prefixExpression);
+            //printf("remaining b: %d : %d\n", (*(Process**)(((Node*)dummyJ) -> data)) -> remainingBurstTime, hoveringBurstTime);
 
             if ((*(Process**)(((Node*)dummyJ) -> data)) -> remainingBurstTime < hoveringBurstTime && (*(Process**)(((Node*)dummyJ) -> data)) -> processState != TERMINATED){
                 ((Node*)dummyJ) -> previous -> next = ((Node*)dummyJ) -> next;
-                ((Node*)dummyJ) -> next -> previous = ((Node*)dummyJ) -> previous;
 
+                if (((Node*)dummyJ) -> next != NULL)
+                    ((Node*)dummyJ) -> next -> previous = ((Node*)dummyJ) -> previous;
+                    
                 ((Node*)dummyI) -> previous -> next = (Node*)dummyJ;
                 ((Node*)dummyJ) -> next = ((Node*)dummyI);
                 ((Node*)dummyJ) -> previous = ((Node*)dummyI) -> previous;
                 ((Node*)dummyI) -> previous = (Node*)dummyJ;
-                printf("sorting\n");
             }
         }
         printf("after comp?\n");
