@@ -17,18 +17,29 @@ static GtkCssProvider* cssProvider;
 struct SimulatorUIController{
     GtkScrolledWindow* processListWindow;
     GtkListBox* processList;
+
+    GtkLabel* numberOfProcessorLabel;
+    GtkLabel* currentTimeframeLabel;
+
+    gboolean autoSimulation;
 }uiController;
 /*___________________________________________________________________*/
+
 
 static ProcessScheduler* simulatorProcessScheduler;
 static int processorAmount = 0;
 
+char* intToString(int num);
+
+void startSimulator();
 void resetSimulator();
 void initializeSimulator();
-void startSimulator();
 void simulatorAddProcess(ProcessScheduler* processScheduler, expression infixExpression);
 
 gboolean updateProcessList();
+gboolean updateLabelDisplay();
+gboolean updateSimulatorProcessScheduler();
+
 
 /*___________________________________________________________________*/
 // signal
@@ -104,6 +115,31 @@ G_MODULE_EXPORT void addProcessButton__clicked(GtkButton* button, gpointer data)
 }
 /*___________________________________________________________________*/
 
+
+/*___________________________________________________________________*/
+// utility
+char* intToString(int num){
+    if (num == 0) return "0";
+
+    int len = 0, duplicateNum = num;
+    char* string;
+
+    for (duplicateNum, len; duplicateNum > 0; duplicateNum /= 10, len++);
+
+    string = malloc(sizeof(char) * (len + 1));
+    string[len] = '\0';
+    for (len, num; len > 0; len--, num /= 10){
+        string[len-1] = (char)((num % 10) + 48);
+    }
+    
+    return string;
+}
+
+/*___________________________________________________________________*/
+
+
+/*___________________________________________________________________*/
+// simulator
 void resetSimulator(){
     free(simulatorProcessScheduler);
     processorAmount = 0;
@@ -112,18 +148,18 @@ void resetSimulator(){
 }
 
 void initializeSimulator(){
+    uiController.autoSimulation = FALSE;
+
     uiController.processListWindow = GTK_SCROLLED_WINDOW(gtk_builder_get_object(builder, "processListWindow"));
     uiController.processList = GTK_LIST_BOX(gtk_builder_get_object(builder, "processList"));
 
     simulatorProcessScheduler = createProcessScheduler(2, ON);
-    simulatorAddProcess(simulatorProcessScheduler, "a+b");
-    simulatorAddProcess(simulatorProcessScheduler, "e-f");
-    simulatorAddProcess(simulatorProcessScheduler, "a+b+c-d-e-f-g-h-i-j-k-l-m-n*o*p");
-    simulatorAddProcess(simulatorProcessScheduler, "a/b");
+    simulatorAddProcess(simulatorProcessScheduler, "(x+y)*(a+b)");
 
-    for (int i = 0; i < 20; i++){
-        simulatorAddProcess(simulatorProcessScheduler, "hewwo");
-    }
+    uiController.numberOfProcessorLabel = GTK_LABEL(gtk_builder_get_object(builder, "numberOfProcessorLabel"));
+    uiController.currentTimeframeLabel = GTK_LABEL(gtk_builder_get_object(builder, "currentTimeframeLabel"));
+    gtk_label_set_label(uiController.numberOfProcessorLabel, intToString(simulatorProcessScheduler -> processorCoreAmount));
+    gtk_label_set_label(uiController.currentTimeframeLabel, intToString(simulatorProcessScheduler -> currentTimeFrame));
 }
 
 void simulatorAddProcess(ProcessScheduler* processScheduler, expression infixExpression){
@@ -131,9 +167,15 @@ void simulatorAddProcess(ProcessScheduler* processScheduler, expression infixExp
 
     updateProcessList();
 }
+/*___________________________________________________________________*/
 
+
+/*___________________________________________________________________*/
+// thread task
+// update the displaying process list
 gboolean updateProcessList(){
     printf("process amount: %d\n", simulatorProcessScheduler->processAmount);
+
     gtk_list_box_remove_all(uiController.processList);
     
     void* dummyCollector = simulatorProcessScheduler -> processList;
@@ -144,6 +186,21 @@ gboolean updateProcessList(){
 
     return TRUE;
 }
+
+// update the displaying number of core & timeframe
+gboolean updateLabelDisplay(){
+    gtk_label_set_label(uiController.numberOfProcessorLabel, intToString(simulatorProcessScheduler -> processorCoreAmount));
+    gtk_label_set_label(uiController.currentTimeframeLabel, intToString(simulatorProcessScheduler -> currentTimeFrame));
+}
+
+// update process scheduler (update and go to next timeframe)
+gboolean updateSimulatorProcessScheduler(){
+    printf("updating\t");
+    processSchedulerNextTimeframe(simulatorProcessScheduler);
+    printf("update end\n");
+}
+/*___________________________________________________________________*/
+
 
 static void activate(GtkApplication* app, gpointer user_data){
     window = gtk_application_window_new(app);
@@ -160,7 +217,10 @@ static void activate(GtkApplication* app, gpointer user_data){
 
     initializeSimulator();
 
-    g_timeout_add_seconds(1, updateProcessList, NULL);
+    //g_timeout_add_seconds(1, updateProcessList, NULL);
+    //g_timeout_add_seconds(1, updateLabelDisplay, NULL);
+    //g_timeout_add_seconds(1, updateSimulatorProcessScheduler, NULL);
+    processSchedulerNextTimeframe(simulatorProcessScheduler);
 
     gtk_window_present(GTK_WINDOW(window));
 }

@@ -24,7 +24,6 @@ Processor* createProcessor(ProcessScheduler* parentScheduler, int processorID){
 }
 
 void processorExecuteProcessThread(void* processorExecutionArgument){    
-    printf("run\n");
     Processor* processor = ((ProcessorExecutionArgument*)(processorExecutionArgument)) -> processor;
     Process* process = ((ProcessorExecutionArgument*)(processorExecutionArgument)) -> process;
     ExpressionInformation* executingExpression = ((ProcessorExecutionArgument*)(processorExecutionArgument)) -> executingExpression;
@@ -93,19 +92,15 @@ void processorExecuteProcessThread(void* processorExecutionArgument){
     linkedListAddNext(process -> dependencyInformation -> solvedIndependentCalculationList, sizeof(executingExpression), (void*)(&dummyCollector));
     *((ExpressionInformation**)(executingExpression)) = executingExpression;
 
+    // update the independent calculation list of the process and check for remaining thread
     process -> dependencyInformation -> independentCalculationList = getIndependentCalculation(process -> dependencyInformation -> updatedPrefixExpression);
     process -> dependencyInformation -> threadAmount = calculateThread(process -> dependencyInformation -> updatedPrefixExpression);
     process -> dependencyInformation -> dependencyAmount = calculateDependency(process -> dependencyInformation -> updatedPrefixExpression);
-    printf("thread amoung:%d\n", process -> dependencyInformation -> threadAmount);
     if (process -> dependencyInformation -> threadAmount <= 0){
         process -> processState = TERMINATED;
+        process -> completionTime = endTime;
     }else {
         process -> processState = READY;
-    }
-    dummyCollector = process -> dependencyInformation -> independentCalculationList;
-    while (((Node*)dummyCollector) -> next != NULL){
-        dummyCollector = ((Node*)dummyCollector) -> next;
-        printf("c: %s\n", (*((ExpressionInformation**)(((Node*)dummyCollector) -> data))) -> prefixExpression);
     }
 
     // unlock the process' mutex after finishing modifying the data so other thread can access it

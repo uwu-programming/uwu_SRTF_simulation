@@ -49,12 +49,14 @@ void sortProcessPriority(ProcessScheduler* processScheduler){
     TimeFrame arrivalTime;
     ProcessTime hoveringBurstTime;
 
+    printf("start\n");
     dummyI = processScheduler -> processList;
     while (((Node*)dummyI) -> next != NULL){
         dummyI = ((Node*)dummyI) -> next;
         dummyJ = dummyI;
-
         hoveringBurstTime = (*(Process**)(((Node*)dummyI) -> data)) -> remainingBurstTime;
+        printf("exp: %s\n", (*(Process**)(((Node*)dummyI) -> data)) ->dependencyInformation->prefixExpression);
+
         while (((Node*)dummyJ) -> next != NULL){
             dummyJ = ((Node*)dummyJ) -> next;
 
@@ -69,35 +71,38 @@ void sortProcessPriority(ProcessScheduler* processScheduler){
             }
         }
     }
+    printf("end\n");
 
-    dummyI = processScheduler -> processList;
-    while (((Node*)dummyI) -> next != NULL){
-        dummyI = ((Node*)dummyI) -> next;
-        dummyJ = dummyI;
+    // dummyI = processScheduler -> processList;
+    // while (((Node*)dummyI) -> next != NULL){
+    //     dummyI = ((Node*)dummyI) -> next;
+    //     dummyJ = dummyI;
 
-        arrivalTime = (*(Process**)(((Node*)dummyI) -> data)) -> arrivalTime;
-        while (((Node*)dummyJ) -> next != NULL){
-            dummyJ = ((Node*)dummyJ) -> next;
+    //     arrivalTime = (*(Process**)(((Node*)dummyI) -> data)) -> arrivalTime;
+    //     while (((Node*)dummyJ) -> next != NULL){
+    //         dummyJ = ((Node*)dummyJ) -> next;
 
-            if ((*(Process**)(((Node*)dummyJ) -> data)) -> arrivalTime < arrivalTime && (*(Process**)(((Node*)dummyJ) -> data)) -> remainingBurstTime <= (*(Process**)(((Node*)dummyI) -> data)) -> remainingBurstTime){
-                ((Node*)dummyJ) -> previous -> next = ((Node*)dummyJ) -> next;
-                ((Node*)dummyJ) -> next -> previous = ((Node*)dummyJ) -> previous;
+    //         if ((*(Process**)(((Node*)dummyJ) -> data)) -> arrivalTime < arrivalTime && (*(Process**)(((Node*)dummyJ) -> data)) -> remainingBurstTime <= (*(Process**)(((Node*)dummyI) -> data)) -> remainingBurstTime){
+    //             ((Node*)dummyJ) -> previous -> next = ((Node*)dummyJ) -> next;
+    //             ((Node*)dummyJ) -> next -> previous = ((Node*)dummyJ) -> previous;
 
-                ((Node*)dummyI) -> previous -> next = (Node*)dummyJ;
-                ((Node*)dummyJ) -> next = ((Node*)dummyI);
-                ((Node*)dummyJ) -> previous = ((Node*)dummyI) -> previous;
-                ((Node*)dummyI) -> previous = (Node*)dummyJ;
-            }
-        }
-    }
+    //             ((Node*)dummyI) -> previous -> next = (Node*)dummyJ;
+    //             ((Node*)dummyJ) -> next = ((Node*)dummyI);
+    //             ((Node*)dummyJ) -> previous = ((Node*)dummyI) -> previous;
+    //             ((Node*)dummyI) -> previous = (Node*)dummyJ;
+    //         }
+    //     }
+    // }
 }
 
 void processSchedulerNextTimeframe(ProcessScheduler* processScheduler){
+    printf("next frame\n");
     // lock the process scheduler's data and sort the priority of its processes
     pthread_mutex_lock(&(processScheduler -> m_processSchedulerData));
 
     sortProcessPriority(processScheduler);
-    
+    printf("done sort\n");
+
     Node* dummyProcessNode = NULL;
     Node* dummyProcessorNode = NULL;
     Node* dummyProcessorThreadNode = NULL;
@@ -139,16 +144,24 @@ void processSchedulerNextTimeframe(ProcessScheduler* processScheduler){
 
                     // create a thread for processor to run the thread execution simulation
                     dummyProcessorThreadNode = dummyProcessorThreadNode -> next;
-                    pthread_create(*((pthread_t**)(dummyProcessorThreadNode -> data)), NULL, (void*)(processorExecuteProcessThread), (void*)(processorExecutionArgument));
+                    //pthread_create(*((pthread_t**)(dummyProcessorThreadNode -> data)), NULL, (void*)(processorExecuteProcessThread), (void*)(processorExecutionArgument));
+                    processorExecuteProcessThread((void*) processorExecutionArgument);
+                    printf("created thread?\n");
                 }
             }
         }
     }
 
-    for (int i = 0; i < processorUsed; i++){
-        dummyProcessorThreadNode2 = dummyProcessorThreadNode2 -> next;
-        pthread_join(**((pthread_t**)(dummyProcessorThreadNode -> data)), NULL);
+    // add waiting time for processes who didn't get assigned to a processor
+    while (dummyProcessNode -> next != NULL){
+        dummyProcessNode = dummyProcessNode -> next;
+        (*(Process**)(dummyProcessNode -> data)) -> waitingTime++;
     }
+
+    // for (int i = 0; i < processorUsed; i++){
+    //     dummyProcessorThreadNode2 = dummyProcessorThreadNode2 -> next;
+    //     pthread_join(**((pthread_t**)(dummyProcessorThreadNode -> data)), NULL);
+    // }
 
     processScheduler -> currentTimeFrame++;
     pthread_mutex_unlock(&(processScheduler -> m_processSchedulerData));
