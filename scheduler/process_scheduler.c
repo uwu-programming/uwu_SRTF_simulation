@@ -69,7 +69,7 @@ void sortProcessPriority(ProcessScheduler* processScheduler){
 
                 if (((Node*)dummyJ) -> next != NULL)
                     ((Node*)dummyJ) -> next -> previous = ((Node*)dummyJ) -> previous;
-                    
+
                 ((Node*)dummyI) -> previous -> next = (Node*)dummyJ;
                 ((Node*)dummyJ) -> next = ((Node*)dummyI);
                 ((Node*)dummyJ) -> previous = ((Node*)dummyI) -> previous;
@@ -153,7 +153,8 @@ void processSchedulerNextTimeframe(ProcessScheduler* processScheduler){
 
     // for (int i = 0; i < processorUsed; i++){
     //     dummyProcessorThreadNode2 = dummyProcessorThreadNode2 -> next;
-    //     pthread_join(**((pthread_t**)(dummyProcessorThreadNode -> data)), NULL);
+    //     printf("try join: %d\n", **((pthread_t**)(dummyProcessorThreadNode2 -> data)));
+    //     pthread_join(**((pthread_t**)(dummyProcessorThreadNode2 -> data)), NULL);
     // }
     printf("joined?\n");
 
