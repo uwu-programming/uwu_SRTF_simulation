@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <time.h>
 #include "expression_notation.h"
 #include "process_scheduler.h"
 #include "processor.h"
@@ -189,15 +190,30 @@ gboolean updateProcessList(){
 
 // update the displaying number of core & timeframe
 gboolean updateLabelDisplay(){
+    pthread_mutex_lock(&(simulatorProcessScheduler -> m_processSchedulerData));
+
     gtk_label_set_label(uiController.numberOfProcessorLabel, intToString(simulatorProcessScheduler -> processorCoreAmount));
     gtk_label_set_label(uiController.currentTimeframeLabel, intToString(simulatorProcessScheduler -> currentTimeFrame));
+
+    pthread_mutex_unlock(&(simulatorProcessScheduler -> m_processSchedulerData));
+    
+    return TRUE;
 }
 
 // update process scheduler (update and go to next timeframe)
 gboolean updateSimulatorProcessScheduler(){
-    printf("updating\t");
     processSchedulerNextTimeframe(simulatorProcessScheduler);
-    printf("update end\n");
+
+    return TRUE;
+}
+
+void constupdate(){
+    //g_timeout_add_seconds(1, updateSimulatorProcessScheduler, NULL);
+    clock_t delay = clock() + 1000;
+    while (clock() < delay);
+
+    updateSimulatorProcessScheduler();
+    constupdate();
 }
 /*___________________________________________________________________*/
 
@@ -217,12 +233,11 @@ static void activate(GtkApplication* app, gpointer user_data){
 
     initializeSimulator();
 
-    //g_timeout_add_seconds(1, updateProcessList, NULL);
-    //g_timeout_add_seconds(1, updateLabelDisplay, NULL);
-    //g_timeout_add_seconds(1, updateSimulatorProcessScheduler, NULL);
-    processSchedulerNextTimeframe(simulatorProcessScheduler);
-
     gtk_window_present(GTK_WINDOW(window));
+
+    //g_timeout_add_seconds(1, updateSimulatorProcessScheduler, NULL);
+    g_timeout_add_seconds(1, updateProcessList, NULL);
+    g_timeout_add_seconds(1, updateLabelDisplay, NULL);
 }
 
 int main(int argc, char** argv){

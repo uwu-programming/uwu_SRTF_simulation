@@ -49,7 +49,6 @@ void sortProcessPriority(ProcessScheduler* processScheduler){
     TimeFrame arrivalTime;
     ProcessTime hoveringBurstTime;
 
-    printf("start\n");
     dummyI = processScheduler -> processList;
     while (((Node*)dummyI) -> next != NULL){
         dummyI = ((Node*)dummyI) -> next;
@@ -71,28 +70,6 @@ void sortProcessPriority(ProcessScheduler* processScheduler){
             }
         }
     }
-    printf("end\n");
-
-    // dummyI = processScheduler -> processList;
-    // while (((Node*)dummyI) -> next != NULL){
-    //     dummyI = ((Node*)dummyI) -> next;
-    //     dummyJ = dummyI;
-
-    //     arrivalTime = (*(Process**)(((Node*)dummyI) -> data)) -> arrivalTime;
-    //     while (((Node*)dummyJ) -> next != NULL){
-    //         dummyJ = ((Node*)dummyJ) -> next;
-
-    //         if ((*(Process**)(((Node*)dummyJ) -> data)) -> arrivalTime < arrivalTime && (*(Process**)(((Node*)dummyJ) -> data)) -> remainingBurstTime <= (*(Process**)(((Node*)dummyI) -> data)) -> remainingBurstTime){
-    //             ((Node*)dummyJ) -> previous -> next = ((Node*)dummyJ) -> next;
-    //             ((Node*)dummyJ) -> next -> previous = ((Node*)dummyJ) -> previous;
-
-    //             ((Node*)dummyI) -> previous -> next = (Node*)dummyJ;
-    //             ((Node*)dummyJ) -> next = ((Node*)dummyI);
-    //             ((Node*)dummyJ) -> previous = ((Node*)dummyI) -> previous;
-    //             ((Node*)dummyI) -> previous = (Node*)dummyJ;
-    //         }
-    //     }
-    // }
 }
 
 void processSchedulerNextTimeframe(ProcessScheduler* processScheduler){
