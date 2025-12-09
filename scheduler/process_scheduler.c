@@ -158,10 +158,10 @@ void processSchedulerNextTimeframe(ProcessScheduler* processScheduler){
         (*(Process**)(dummyProcessNode -> data)) -> waitingTime++;
     }
 
-    // for (int i = 0; i < processorUsed; i++){
-    //     dummyProcessorThreadNode2 = dummyProcessorThreadNode2 -> next;
-    //     pthread_join(**((pthread_t**)(dummyProcessorThreadNode -> data)), NULL);
-    // }
+    for (int i = 0; i < processorUsed; i++){
+        dummyProcessorThreadNode2 = dummyProcessorThreadNode2 -> next;
+        pthread_join(**((pthread_t**)(dummyProcessorThreadNode -> data)), NULL);
+    }
 
     processScheduler -> currentTimeFrame++;
     pthread_mutex_unlock(&(processScheduler -> m_processSchedulerData));
