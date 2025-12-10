@@ -12,7 +12,10 @@ Process* createProcess(expression infixExpression, int processID, TimeFrame arri
     newProcess -> completionTime = -1;
     newProcess -> initialBurstTime = newProcess -> dependencyInformation -> threadAmount;
     newProcess -> remainingBurstTime = newProcess -> initialBurstTime;
+    
+    newProcess -> responseTime = -1;
     newProcess -> waitingTime = 0;
+    newProcess -> turnaroundTime = -1;
 
     return newProcess;
 }

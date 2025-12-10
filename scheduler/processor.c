@@ -30,6 +30,9 @@ void processorExecuteProcessThread(void* processorExecutionArgument){
     TimeFrame startTime = ((ProcessorExecutionArgument*)(processorExecutionArgument)) -> startTime;
     TimeFrame endTime = ((ProcessorExecutionArgument*)(processorExecutionArgument)) -> endTime;
     
+    if (process -> processState == NEW)
+        process -> responseTime = startTime - process -> arrivalTime;
+
     process -> processState = RUNNING;
 
     processor -> startTime = startTime;

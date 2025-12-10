@@ -87,8 +87,8 @@ void processSchedulerNextTimeframe(ProcessScheduler* processScheduler){
         if ((*(Process**)(terminatedCheckProcessNode -> data)) -> processState != TERMINATED && (*(Process**)(terminatedCheckProcessNode -> data)) -> dependencyInformation -> threadAmount <= 0){
             (*(Process**)(terminatedCheckProcessNode -> data)) -> processState = TERMINATED;
             (*(Process**)(terminatedCheckProcessNode -> data)) -> completionTime = processScheduler -> currentTimeFrame;
-        }
-        else if ((*(Process**)(terminatedCheckProcessNode -> data)) -> processState != TERMINATED)
+            (*(Process**)(terminatedCheckProcessNode -> data)) -> turnaroundTime = processScheduler -> currentTimeFrame - (*(Process**)(terminatedCheckProcessNode -> data)) -> arrivalTime;
+        }else if ((*(Process**)(terminatedCheckProcessNode -> data)) -> processState == RUNNING)
             (*(Process**)(terminatedCheckProcessNode -> data)) -> processState = READY;
     }
 
@@ -156,4 +156,62 @@ void processSchedulerNextTimeframe(ProcessScheduler* processScheduler){
 
     processScheduler -> currentTimeFrame++;
     //pthread_mutex_unlock(&(processScheduler -> m_processSchedulerData));
+}
+
+AverageTime calculateAverageResponseTime(ProcessScheduler* processScheduler){
+    int responseAmount = 0;
+    ProcessTime totalTime = 0;
+
+    ProcessList* dummyProcessList = processScheduler -> processList;
+
+    while (dummyProcessList -> next != NULL){
+        dummyProcessList = dummyProcessList -> next;
+
+        Process* dummyProcess = *(Process**)(dummyProcessList -> data);
+        if (dummyProcess -> responseTime >= 0){
+            totalTime += dummyProcess -> responseTime;
+            responseAmount++;
+        }
+    }
+
+    processScheduler -> averageResponseTime = (double)(totalTime) / (double)(responseAmount);
+    return (responseAmount > 0 ? (double)(totalTime) / (double)(responseAmount) : 0.0);
+}
+
+AverageTime calculateAverageWaitingTime(ProcessScheduler* processScheduler){
+    int waitingAmount = 0;
+    ProcessTime totalTime = 0;
+
+    ProcessList* dummyProcessList = processScheduler -> processList;
+
+    while (dummyProcessList -> next != NULL){
+        dummyProcessList = dummyProcessList -> next;
+
+        Process* dummyProcess = *(Process**)(dummyProcessList -> data);
+        totalTime += dummyProcess -> waitingTime;
+        waitingAmount++;
+    }
+
+    processScheduler -> averageWaitingTime = (double)(totalTime) / (double)(waitingAmount);
+    return (waitingAmount > 0 ? (double)(totalTime) / (double)(waitingAmount) : 0.0);
+}
+
+AverageTime calculateAverageTurnaroundTime(ProcessScheduler* processScheduler){
+    int turnaroundAmount = 0;
+    ProcessTime totalTime = 0;
+
+    ProcessList* dummyProcessList = processScheduler -> processList;
+
+    while (dummyProcessList -> next != NULL){
+        dummyProcessList = dummyProcessList -> next;
+
+        Process* dummyProcess = *(Process**)(dummyProcessList -> data);
+        if (dummyProcess -> turnaroundTime >= 0){
+            totalTime += dummyProcess -> turnaroundTime;
+            turnaroundAmount++;
+        }
+    }
+
+    processScheduler -> averageTurnaroundTime = (double)(totalTime) / (double)(turnaroundAmount);
+    return (turnaroundAmount > 0 ? (double)(totalTime) / (double)(turnaroundAmount) : 0.0);
 }

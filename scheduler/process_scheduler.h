@@ -9,6 +9,7 @@ typedef enum MULTI_THREADING_SETTING MultiThreadingSetting;
 typedef Node ProcessList;
 typedef Node ProcessorList;
 typedef struct ProcessScheduler ProcessScheduler;
+typedef double AverageTime;
 
 extern TimeFrame timeFrame;
 
@@ -31,6 +32,10 @@ struct ProcessScheduler{
 
     int processAmount;
     ProcessList* processList;
+
+    AverageTime averageResponseTime;
+    AverageTime averageWaitingTime;
+    AverageTime averageTurnaroundTime;
 };
 
 ProcessScheduler* createProcessScheduler(int processorCoreAmount, MultiThreadingSetting multiThreadingSetting);
@@ -40,5 +45,11 @@ void addProcess(ProcessScheduler* processScheduler, expression infixExpression);
 void sortProcessPriority(ProcessScheduler* processScheduler);
 
 void processSchedulerNextTimeframe(ProcessScheduler* processScheduler);
+
+AverageTime calculateAverageResponseTime(ProcessScheduler* processScheduler);
+
+AverageTime calculateAverageWaitingTime(ProcessScheduler* processScheduler);
+
+AverageTime calculateAverageTurnaroundTime(ProcessScheduler* processScheduler);
 
 #endif

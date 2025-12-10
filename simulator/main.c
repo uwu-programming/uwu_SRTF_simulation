@@ -1,6 +1,7 @@
 #include <gtk/gtk.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <pthread.h>
 #include <time.h>
 #include "expression_notation.h"
@@ -26,6 +27,10 @@ struct SimulatorUIController{
     GtkLabel* numberOfProcessorLabel;
     GtkLabel* currentTimeframeLabel;
 
+    GtkLabel* averageResponseTimeLabel;
+    GtkLabel* averageWaitingTimeLabel;
+    GtkLabel* averageTurnaroundTimeLabel;
+
     gboolean autoSimulation;
 }uiController;
 /*___________________________________________________________________*/
@@ -35,6 +40,7 @@ static ProcessScheduler* simulatorProcessScheduler;
 static int processorAmount = 0;
 
 char* intToString(int num);
+char* doubleToString(double num);
 
 void startSimulator();
 void resetSimulator();
@@ -169,6 +175,33 @@ char* intToString(int num){
     return string;
 }
 
+char* doubleToString(double num){
+    if (num == 0.0) return "0.0";
+    if (num < 0.0) return "N/A";
+
+    // get the front part (in front decimal) of the double
+    char* intString = intToString((int)(num));
+
+    int remaining = (int)((num - (int)(num)) * 100000);
+    char* remainingString = intToString(remaining);
+    
+    int totalLen = strlen(intString) + strlen(remainingString) + 2;
+    
+    char* string = malloc(sizeof(char) * totalLen);
+
+    // join the first part
+    for (int i = 0; i < strlen(intString); i++)
+        string[i] = intString[i];
+
+    string[strlen(intString)] = '.';
+
+    // join the decimal part
+    for (int i = strlen(intString) + 1; i < totalLen; i++)
+        string[i] = remainingString[i-strlen(intString)-1];
+
+    return string;
+}
+
 /*___________________________________________________________________*/
 
 
@@ -274,8 +307,14 @@ void initializeSimulator(){
     uiController.timeframeList = GTK_BOX(gtk_builder_get_object(builder, "timeframeListBox"));
     uiController.simulatorGanttChart = GTK_BOX(gtk_builder_get_object(builder, "simulatorGanttChart"));
 
+    uiController.averageResponseTimeLabel = GTK_LABEL(gtk_builder_get_object(builder, "averageResponseTimeLabel"));
+    uiController.averageWaitingTimeLabel = GTK_LABEL(gtk_builder_get_object(builder, "averageWaitingTimeLabel"));
+    uiController.averageTurnaroundTimeLabel = GTK_LABEL(gtk_builder_get_object(builder, "averageTurnaroundTimeLabel"));
+
     simulatorProcessScheduler = createProcessScheduler(1, ON);
-    //simulatorAddProcess(simulatorProcessScheduler, "(x+y)*(a+b)");
+    simulatorAddProcess(simulatorProcessScheduler, "a+b+c+d");
+    simulatorAddProcess(simulatorProcessScheduler, "a+b");
+    simulatorAddProcess(simulatorProcessScheduler, "a+b+c");
 
     uiController.numberOfProcessorLabel = GTK_LABEL(gtk_builder_get_object(builder, "numberOfProcessorLabel"));
     uiController.currentTimeframeLabel = GTK_LABEL(gtk_builder_get_object(builder, "currentTimeframeLabel"));
@@ -316,14 +355,18 @@ gboolean updateProcessList(){
         GtkBox* processStatusSection = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0));
 
         GtkBox* arrivalTimeSection = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0));
+        GtkBox* responseTimeSection = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0));
         GtkBox* completionTimeSection = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0));
+        GtkBox* turnaroundTimeSection = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0));
         GtkBox* remainingBurstTimeSection = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0));
         GtkBox* waitingTimeSection = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0));
 
         gtk_box_set_homogeneous(processIDsection, TRUE);
         gtk_box_set_homogeneous(processStatusSection, TRUE);
         gtk_box_set_homogeneous(arrivalTimeSection, TRUE);
+        gtk_box_set_homogeneous(responseTimeSection, TRUE);
         gtk_box_set_homogeneous(completionTimeSection, TRUE);
+        gtk_box_set_homogeneous(turnaroundTimeSection, TRUE);
         gtk_box_set_homogeneous(remainingBurstTimeSection, TRUE);
         gtk_box_set_homogeneous(waitingTimeSection, TRUE);
 
@@ -355,8 +398,14 @@ gboolean updateProcessList(){
         gtk_box_append(arrivalTimeSection, gtk_label_new("Arrival time:"));
         gtk_box_append(arrivalTimeSection, gtk_label_new(intToString(hoveringProcess -> arrivalTime)));
 
+        gtk_box_append(responseTimeSection, gtk_label_new("Response time:"));
+        gtk_box_append(responseTimeSection, gtk_label_new(intToString(hoveringProcess -> responseTime)));
+
         gtk_box_append(completionTimeSection, gtk_label_new("Completion time:"));
         gtk_box_append(completionTimeSection, gtk_label_new(intToString(hoveringProcess -> completionTime)));
+
+        gtk_box_append(turnaroundTimeSection, gtk_label_new("Turnaround time:"));
+        gtk_box_append(turnaroundTimeSection, gtk_label_new(intToString(hoveringProcess -> turnaroundTime)));
 
         gtk_box_append(remainingBurstTimeSection, gtk_label_new("Burst time:"));
         gtk_box_append(remainingBurstTimeSection, gtk_label_new(intToString(hoveringProcess -> remainingBurstTime)));
@@ -368,7 +417,9 @@ gboolean updateProcessList(){
         gtk_box_append(dummyBox, GTK_WIDGET(processExpressionSection));
         gtk_box_append(dummyBox, GTK_WIDGET(processStatusSection));
         gtk_box_append(dummyBox, GTK_WIDGET(arrivalTimeSection));
+        gtk_box_append(dummyBox, GTK_WIDGET(responseTimeSection));
         gtk_box_append(dummyBox, GTK_WIDGET(completionTimeSection));
+        gtk_box_append(dummyBox, GTK_WIDGET(turnaroundTimeSection));
         gtk_box_append(dummyBox, GTK_WIDGET(remainingBurstTimeSection));
         gtk_box_append(dummyBox, GTK_WIDGET(waitingTimeSection));
 
@@ -487,6 +538,10 @@ gboolean updateLabelDisplay(){
     gtk_label_set_label(uiController.numberOfProcessorLabel, intToString(simulatorProcessScheduler -> processorCoreAmount));
     gtk_label_set_label(uiController.currentTimeframeLabel, intToString(simulatorProcessScheduler -> currentTimeFrame));
     
+    gtk_label_set_label(uiController.averageResponseTimeLabel, doubleToString(calculateAverageResponseTime(simulatorProcessScheduler)));
+    gtk_label_set_label(uiController.averageWaitingTimeLabel, doubleToString(calculateAverageWaitingTime(simulatorProcessScheduler)));
+    gtk_label_set_label(uiController.averageTurnaroundTimeLabel, doubleToString(calculateAverageTurnaroundTime(simulatorProcessScheduler)));
+
     return TRUE;
 }
 
@@ -503,7 +558,7 @@ gboolean updateSimulatorProcessScheduler(){
 static void activate(GtkApplication* app, gpointer user_data){
     window = gtk_application_window_new(app);
     gtk_window_set_title(GTK_WINDOW(window), "Shortest Remaining Time First simulator");
-    gtk_window_set_default_size(GTK_WINDOW(window), 1200, 600);
+    gtk_window_set_default_size(GTK_WINDOW(window), 1400, 700);
 
     builder = gtk_builder_new();
     gtk_builder_add_from_file(builder, "simulator_ui.ui", NULL);
