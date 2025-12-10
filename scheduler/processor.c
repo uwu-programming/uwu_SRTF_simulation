@@ -94,12 +94,6 @@ void processorExecuteProcessThread(void* processorExecutionArgument){
     process -> dependencyInformation -> independentCalculationList = getIndependentCalculation(process -> dependencyInformation -> updatedPrefixExpression);
     process -> dependencyInformation -> threadAmount = calculateThread(process -> dependencyInformation -> updatedPrefixExpression);
     process -> dependencyInformation -> dependencyAmount = calculateDependency(process -> dependencyInformation -> updatedPrefixExpression);
-    if (process -> dependencyInformation -> threadAmount <= 0){
-        process -> processState = TERMINATED;
-        process -> completionTime = endTime;
-    }else {
-        process -> processState = READY;
-    }
 
     // unlock the process' mutex after finishing modifying the data so other thread can access it
     //pthread_mutex_unlock(&(process -> m_processData));

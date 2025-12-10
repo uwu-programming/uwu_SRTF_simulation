@@ -79,6 +79,19 @@ void processSchedulerNextTimeframe(ProcessScheduler* processScheduler){
     // lock the process scheduler's data and sort the priority of its processes
     //pthread_mutex_lock(&(processScheduler -> m_processSchedulerData));
 
+    // check if there is any process that has already been completed and switch the process state to TERMINATED
+    Node* terminatedCheckProcessNode = processScheduler -> processList;
+
+    while (terminatedCheckProcessNode -> next != NULL){
+        terminatedCheckProcessNode = terminatedCheckProcessNode -> next;
+        if ((*(Process**)(terminatedCheckProcessNode -> data)) -> processState != TERMINATED && (*(Process**)(terminatedCheckProcessNode -> data)) -> dependencyInformation -> threadAmount <= 0){
+            (*(Process**)(terminatedCheckProcessNode -> data)) -> processState = TERMINATED;
+            (*(Process**)(terminatedCheckProcessNode -> data)) -> completionTime = processScheduler -> currentTimeFrame;
+        }
+        else if ((*(Process**)(terminatedCheckProcessNode -> data)) -> processState != TERMINATED)
+            (*(Process**)(terminatedCheckProcessNode -> data)) -> processState = READY;
+    }
+
     sortProcessPriority(processScheduler);
 
     Node* dummyProcessNode = NULL;

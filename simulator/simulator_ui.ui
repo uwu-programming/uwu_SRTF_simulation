@@ -16,7 +16,7 @@
                     <object id="processLabel" class="GtkLabel">
                         <style><class name="processLabel"/></style>
                         <property name="label">Process</property>
-                        <property name="width-chars">25</property>
+                        <property name="width-chars">32</property>
                     </object>
                 </child>
 
@@ -247,14 +247,23 @@
                                         <property name="spacing">16</property>
 
                                         <child>
-                                            <object class="GtkButton">
+                                            <object id="autoButton" class="GtkButton">
                                                 <property name="label">Auto</property>
+                                                <signal name="clicked" handler="autoButton__clicked"/>
                                             </object>
                                         </child>
 
                                         <child>
-                                            <object class="GtkButton">
+                                            <object id="stopAutoButton" class="GtkButton">
+                                                <property name="label">Stop auto</property>
+                                                <signal name="clicked" handler="stopAutoButton__clicked"/>
+                                            </object>
+                                        </child>
+
+                                        <child>
+                                            <object id="nextTimeFrameButton" class="GtkButton">
                                                 <property name="label">Next timeframe</property>
+                                                <signal name="clicked" handler="nextTimeFrameButton__clicked"/>
                                             </object>
                                         </child>
                                     </object>

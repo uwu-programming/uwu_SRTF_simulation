@@ -9,7 +9,7 @@ Process* createProcess(expression infixExpression, int processID, TimeFrame arri
     newProcess -> dependencyInformation = createDepenencyInformation(infixExpression);
 
     newProcess -> arrivalTime = arrivalTime;
-    newProcess -> completionTime = 0;
+    newProcess -> completionTime = -1;
     newProcess -> initialBurstTime = newProcess -> dependencyInformation -> threadAmount;
     newProcess -> remainingBurstTime = newProcess -> initialBurstTime;
     newProcess -> waitingTime = 0;
