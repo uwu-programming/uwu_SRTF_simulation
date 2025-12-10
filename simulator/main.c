@@ -132,6 +132,14 @@ G_MODULE_EXPORT void addProcessButton__clicked(GtkButton* button, gpointer data)
 // resetButton
 static GtkWidget* resetSimulatorWindow;
 
+void resetSimulatorWindowReset(GtkWidget* button, gpointer entry){
+    if (strtol(gtk_entry_buffer_get_text(gtk_entry_get_buffer(entry)), NULL, 10) > 0){
+        resetSimulator(strtol(gtk_entry_buffer_get_text(gtk_entry_get_buffer(entry)), NULL, 10));
+    }
+
+    gtk_window_close(GTK_WINDOW(resetSimulatorWindow));
+}
+
 G_MODULE_EXPORT void resetSimulator__clicked(GtkButton* button, gpointer data){
     gtk_widget_set_sensitive(window, FALSE);
     uiController.autoSimulation = FALSE;
@@ -150,12 +158,14 @@ G_MODULE_EXPORT void resetSimulator__clicked(GtkButton* button, gpointer data){
 
     GtkLabel* statisticsLabel = GTK_LABEL(gtk_label_new("Previous simulation statistics:"));
 
-    GtkBox* resetSimulatorWindowContent = GTK_BOX(gtk_box_new(GTK_ORIENTATION_VERTICAL, 0));
+    GtkBox* resetSimulatorWindowContent = GTK_BOX(gtk_box_new(GTK_ORIENTATION_VERTICAL, 16));
     GtkBox* averageResponseTimeSection = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8));
     GtkBox* averageWaitingTimeSection = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8));
     GtkBox* averageTurnaroundTimeSection = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8));
 
     gtk_widget_set_valign(GTK_WIDGET(resetSimulatorWindowContent), GTK_ALIGN_CENTER);
+    gtk_widget_set_halign(GTK_WIDGET(resetSimulatorWindowContent), GTK_ALIGN_CENTER);
+    gtk_box_set_homogeneous(resetSimulatorWindowContent, TRUE);
 
     gtk_box_set_homogeneous(averageResponseTimeSection, TRUE);
     gtk_box_set_homogeneous(averageWaitingTimeSection, TRUE);
@@ -168,10 +178,37 @@ G_MODULE_EXPORT void resetSimulator__clicked(GtkButton* button, gpointer data){
     gtk_box_append(averageTurnaroundTimeSection, GTK_WIDGET(averageTurnaroundTimeLabel));
     gtk_box_append(averageTurnaroundTimeSection, GTK_WIDGET(averageTurnaroundTimeDataLabel));
 
-    gtk_box_append(resetSimulatorWindowContent, GTK_WIDGET(statisticsLabel));
-    gtk_box_append(resetSimulatorWindowContent, GTK_WIDGET(averageResponseTimeSection));
-    gtk_box_append(resetSimulatorWindowContent, GTK_WIDGET(averageWaitingTimeSection));
-    gtk_box_append(resetSimulatorWindowContent, GTK_WIDGET(averageTurnaroundTimeSection));
+    GtkBox* statisticsSection = GTK_BOX(gtk_box_new(GTK_ORIENTATION_VERTICAL, 4));
+    gtk_box_append(statisticsSection, GTK_WIDGET(statisticsLabel));
+    gtk_box_append(statisticsSection, GTK_WIDGET(averageResponseTimeSection));
+    gtk_box_append(statisticsSection, GTK_WIDGET(averageWaitingTimeSection));
+    gtk_box_append(statisticsSection, GTK_WIDGET(averageTurnaroundTimeSection));
+
+    gtk_box_append(resetSimulatorWindowContent, GTK_WIDGET(statisticsSection));
+
+    GtkBox* resetSection = GTK_BOX(gtk_box_new(GTK_ORIENTATION_VERTICAL, 0));
+    GtkBox* resetLabelSection = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 16));
+    
+    gtk_box_set_homogeneous(resetSection, TRUE);
+    gtk_box_set_homogeneous(resetLabelSection, TRUE);
+    gtk_widget_set_halign(GTK_WIDGET(resetSection), GTK_ALIGN_CENTER);
+    gtk_widget_set_valign(GTK_WIDGET(resetSection), GTK_ALIGN_CENTER);
+
+    GtkLabel* entryLabel = GTK_LABEL(gtk_label_new("Enter new simulator processor amount:"));
+    GtkEntry* resetEntry = GTK_ENTRY(gtk_entry_new());
+    gtk_editable_set_max_width_chars(GTK_EDITABLE(resetEntry), 20);
+
+    GtkButton* resetButton = GTK_BUTTON(gtk_button_new_with_label("Reset"));
+    g_signal_connect(resetButton, "clicked", G_CALLBACK(resetSimulatorWindowReset), resetEntry);
+    gtk_button_set_can_shrink(resetButton, TRUE);
+
+    gtk_box_append(resetLabelSection, GTK_WIDGET(entryLabel));
+    gtk_box_append(resetLabelSection, GTK_WIDGET(resetEntry));
+    
+    gtk_box_append(resetSection, GTK_WIDGET(resetLabelSection));
+    gtk_box_append(resetSection, GTK_WIDGET(resetButton));
+
+    gtk_box_append(resetSimulatorWindowContent, GTK_WIDGET(resetSection));
 
     gtk_window_set_child(GTK_WINDOW(resetSimulatorWindow), GTK_WIDGET(resetSimulatorWindowContent));
     gtk_window_present(GTK_WINDOW(resetSimulatorWindow));
@@ -214,6 +251,7 @@ struct ScrolledWindowController{
 //         gtk_scrolled_window_set_vadjustment(scrolledWindowController.ganttChartScrolledWindow, adjustment);
 // }
 
+// link the scroll window of gantt chart and timeframe & processor list
 void scrolledGanttChartWindowH(GtkAdjustment* adjustment, gpointer userData){
     gtk_scrolled_window_set_hadjustment(scrolledWindowController.timeframeScrolledWindow, adjustment);
 }
@@ -363,6 +401,12 @@ GtkWidget* createEmptyGanttChart(){
 void resetSimulator(int processorCoreAmount){
     free(simulatorProcessScheduler);
 
+    simulatorProcessScheduler = createProcessScheduler(processorCoreAmount, ON);
+    updateProcessList();
+    updateProcessorList();
+    updateTimeframeList();
+    updateGanttChart();
+    updateLabelDisplay();
 }
 
 void initializeSimulator(){

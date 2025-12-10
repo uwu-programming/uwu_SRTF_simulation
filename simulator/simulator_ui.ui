@@ -205,12 +205,10 @@
                                                 <child>
                                                     <object class="GtkLabel">
                                                         <property name="label">Number of processor:</property>
-                                                        <property name="xalign">0.0</property>
                                                     </object>
                                                 </child>
                                                 <child>
                                                     <object id="numberOfProcessorLabel" class="GtkLabel">
-                                                        <property name="xalign">1.0</property>
                                                     </object>
                                                 </child>
                                             </object>
@@ -225,12 +223,10 @@
                                                 <child>
                                                     <object class="GtkLabel">
                                                         <property name="label">Current timeframe:</property>
-                                                        <property name="xalign">0.0</property>
                                                     </object>
                                                 </child>
                                                 <child>
                                                     <object id="currentTimeframeLabel" class="GtkLabel">
-                                                        <property name="xalign">1.0</property>
                                                     </object>
                                                 </child>
                                             </object>
