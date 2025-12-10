@@ -58,12 +58,13 @@ gboolean updateSimulatorProcessScheduler();
 
 /*___________________________________________________________________*/
 // signal
-// addProcessButton
-static GtkWidget* addProcessWindow;
 
 void focusMainWindow(){
     gtk_widget_set_sensitive(window, TRUE);
 }
+
+// addProcessButton
+static GtkWidget* addProcessWindow;
 
 void addProcessWindowAddProcess(GtkWidget* widget, gpointer entry){
     const char* collectedEntryValue = gtk_entry_buffer_get_text(gtk_entry_get_buffer(entry));
@@ -86,8 +87,6 @@ void closeAddProcessWindow(){
 }
 
 G_MODULE_EXPORT void addProcessButton__clicked(GtkButton* button, gpointer data){
-    gtk_widget_set_sensitive(window, FALSE);
-
     addProcessWindow = gtk_window_new();
     gtk_window_set_title(GTK_WINDOW(addProcessWindow), "Add process");
     gtk_window_set_default_size(GTK_WINDOW(addProcessWindow), 500, 300);
@@ -130,6 +129,54 @@ G_MODULE_EXPORT void addProcessButton__clicked(GtkButton* button, gpointer data)
     gtk_window_present(GTK_WINDOW(addProcessWindow));
 }
 
+// resetButton
+static GtkWidget* resetSimulatorWindow;
+
+G_MODULE_EXPORT void resetSimulator__clicked(GtkButton* button, gpointer data){
+    gtk_widget_set_sensitive(window, FALSE);
+    uiController.autoSimulation = FALSE;
+
+    resetSimulatorWindow = gtk_window_new();
+    gtk_window_set_title(GTK_WINDOW(resetSimulatorWindow), "Reset simulator");
+    gtk_window_set_default_size(GTK_WINDOW(resetSimulatorWindow), 600, 400);
+    g_signal_connect(resetSimulatorWindow, "close-request", G_CALLBACK(focusMainWindow), NULL);
+
+    GtkLabel* averageResponseTimeLabel = GTK_LABEL(gtk_label_new("Average response time:"));
+    GtkLabel* averageWaitingTimeLabel = GTK_LABEL(gtk_label_new("Average waiting time:"));
+    GtkLabel* averageTurnaroundTimeLabel = GTK_LABEL(gtk_label_new("Average turnaround time:"));
+    GtkLabel* averageResponseTimeDataLabel = GTK_LABEL(gtk_label_new(doubleToString(simulatorProcessScheduler -> averageResponseTime)));
+    GtkLabel* averageWaitingTimeDataLabel = GTK_LABEL(gtk_label_new(doubleToString(simulatorProcessScheduler -> averageWaitingTime)));
+    GtkLabel* averageTurnaroundTimeDataLabel = GTK_LABEL(gtk_label_new(doubleToString(simulatorProcessScheduler -> averageTurnaroundTime)));
+
+    GtkLabel* statisticsLabel = GTK_LABEL(gtk_label_new("Previous simulation statistics:"));
+
+    GtkBox* resetSimulatorWindowContent = GTK_BOX(gtk_box_new(GTK_ORIENTATION_VERTICAL, 0));
+    GtkBox* averageResponseTimeSection = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8));
+    GtkBox* averageWaitingTimeSection = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8));
+    GtkBox* averageTurnaroundTimeSection = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8));
+
+    gtk_widget_set_valign(GTK_WIDGET(resetSimulatorWindowContent), GTK_ALIGN_CENTER);
+
+    gtk_box_set_homogeneous(averageResponseTimeSection, TRUE);
+    gtk_box_set_homogeneous(averageWaitingTimeSection, TRUE);
+    gtk_box_set_homogeneous(averageTurnaroundTimeSection, TRUE);
+
+    gtk_box_append(averageResponseTimeSection, GTK_WIDGET(averageResponseTimeLabel));
+    gtk_box_append(averageResponseTimeSection, GTK_WIDGET(averageResponseTimeDataLabel));
+    gtk_box_append(averageWaitingTimeSection, GTK_WIDGET(averageWaitingTimeLabel));
+    gtk_box_append(averageWaitingTimeSection, GTK_WIDGET(averageWaitingTimeDataLabel));
+    gtk_box_append(averageTurnaroundTimeSection, GTK_WIDGET(averageTurnaroundTimeLabel));
+    gtk_box_append(averageTurnaroundTimeSection, GTK_WIDGET(averageTurnaroundTimeDataLabel));
+
+    gtk_box_append(resetSimulatorWindowContent, GTK_WIDGET(statisticsLabel));
+    gtk_box_append(resetSimulatorWindowContent, GTK_WIDGET(averageResponseTimeSection));
+    gtk_box_append(resetSimulatorWindowContent, GTK_WIDGET(averageWaitingTimeSection));
+    gtk_box_append(resetSimulatorWindowContent, GTK_WIDGET(averageTurnaroundTimeSection));
+
+    gtk_window_set_child(GTK_WINDOW(resetSimulatorWindow), GTK_WIDGET(resetSimulatorWindowContent));
+    gtk_window_present(GTK_WINDOW(resetSimulatorWindow));
+}
+
 // autoButton
 G_MODULE_EXPORT void autoButton__clicked(GtkButton* button, gpointer data){
     uiController.autoSimulation = TRUE;
@@ -151,6 +198,20 @@ G_MODULE_EXPORT void nextTimeFrameButton__clicked(GtkButton* button, gpointer da
         updateTimeframeList();
         updateLabelDisplay();
     }
+}
+
+// struct for controlling the scrolled window
+struct ScrolledWindowController{
+    GtkScrolledWindow* processorListScrolledWindow;
+    GtkScrolledWindow* timeframeScrolledWindow;
+    GtkScrolledWindow* ganttChartScrolledWindow;
+}scrolledWindowController;
+
+// scrolled window
+// figured this out, why they are binding together when there is only one listener?
+void scrolledProcessorWindow(GtkAdjustment* adjustment, gpointer userData){
+    if (simulatorProcessScheduler -> currentTimeFrame > 0)
+        gtk_scrolled_window_set_vadjustment(scrolledWindowController.ganttChartScrolledWindow, adjustment);
 }
 /*___________________________________________________________________*/
 
@@ -291,11 +352,9 @@ GtkWidget* createEmptyGanttChart(){
 
 /*___________________________________________________________________*/
 // simulator
-void resetSimulator(){
+void resetSimulator(int processorCoreAmount){
     free(simulatorProcessScheduler);
-    processorAmount = 0;
 
-    initializeSimulator();
 }
 
 void initializeSimulator(){
@@ -311,7 +370,7 @@ void initializeSimulator(){
     uiController.averageWaitingTimeLabel = GTK_LABEL(gtk_builder_get_object(builder, "averageWaitingTimeLabel"));
     uiController.averageTurnaroundTimeLabel = GTK_LABEL(gtk_builder_get_object(builder, "averageTurnaroundTimeLabel"));
 
-    simulatorProcessScheduler = createProcessScheduler(1, ON);
+    simulatorProcessScheduler = createProcessScheduler(4, ON);
     simulatorAddProcess(simulatorProcessScheduler, "a+b+c+d");
     simulatorAddProcess(simulatorProcessScheduler, "a+b");
     simulatorAddProcess(simulatorProcessScheduler, "a+b+c");
@@ -320,6 +379,12 @@ void initializeSimulator(){
     uiController.currentTimeframeLabel = GTK_LABEL(gtk_builder_get_object(builder, "currentTimeframeLabel"));
     gtk_label_set_label(uiController.numberOfProcessorLabel, intToString(simulatorProcessScheduler -> processorCoreAmount));
     gtk_label_set_label(uiController.currentTimeframeLabel, intToString(simulatorProcessScheduler -> currentTimeFrame));
+
+    scrolledWindowController.processorListScrolledWindow = GTK_SCROLLED_WINDOW(gtk_builder_get_object(builder, "processorListScrolledWindow"));
+    scrolledWindowController.timeframeScrolledWindow = GTK_SCROLLED_WINDOW(gtk_builder_get_object(builder, "timeframeScrolledWindow"));
+    scrolledWindowController.ganttChartScrolledWindow = GTK_SCROLLED_WINDOW(gtk_builder_get_object(builder, "ganttChartScrolledWindow"));
+
+    g_signal_connect(gtk_scrolled_window_get_vadjustment(scrolledWindowController.processorListScrolledWindow), "value-changed", G_CALLBACK(scrolledProcessorWindow), NULL);
 }
 
 void simulatorAddProcess(ProcessScheduler* processScheduler, expression infixExpression){

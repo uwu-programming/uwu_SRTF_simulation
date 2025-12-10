@@ -106,7 +106,7 @@
 
                                 <!-- timeframe display -->
                                 <child>
-                                    <object class="GtkScrolledWindow">
+                                    <object id="timeframeScrolledWindow" class="GtkScrolledWindow">
                                         <child>
                                             <object id="timeframeListBox" class="GtkBox">
                                                 <style><class name="timeframeListBox"/></style>
@@ -129,7 +129,7 @@
 
                                 <!-- processor list -->
                                 <child>
-                                    <object class="GtkScrolledWindow">
+                                    <object id="processorListScrolledWindow" class="GtkScrolledWindow">
                                         <style><class name="processorListScrolledWindow"/></style>
                                         <property name="width-request">160</property>
 
@@ -146,7 +146,7 @@
 
                                 <!-- ganttchart progress list -->
                                 <child>
-                                    <object class="GtkScrolledWindow">
+                                    <object id="ganttChartScrolledWindow" class="GtkScrolledWindow">
                                         <property name="hexpand">TRUE</property>
 
                                         <child>
@@ -245,6 +245,7 @@
                                         <child>
                                             <object class="GtkButton">
                                                 <property name="label">Reset simulator</property>
+                                                <signal name="clicked" handler="resetSimulator__clicked" />
                                             </object>
                                         </child>
 

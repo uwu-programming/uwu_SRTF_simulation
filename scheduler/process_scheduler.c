@@ -174,7 +174,7 @@ AverageTime calculateAverageResponseTime(ProcessScheduler* processScheduler){
         }
     }
 
-    processScheduler -> averageResponseTime = (double)(totalTime) / (double)(responseAmount);
+    processScheduler -> averageResponseTime =  (responseAmount > 0 ? (double)(totalTime) / (double)(responseAmount) : 0.0);
     return (responseAmount > 0 ? (double)(totalTime) / (double)(responseAmount) : 0.0);
 }
 
@@ -192,7 +192,7 @@ AverageTime calculateAverageWaitingTime(ProcessScheduler* processScheduler){
         waitingAmount++;
     }
 
-    processScheduler -> averageWaitingTime = (double)(totalTime) / (double)(waitingAmount);
+    processScheduler -> averageWaitingTime = (waitingAmount > 0 ? (double)(totalTime) / (double)(waitingAmount) : 0.0);
     return (waitingAmount > 0 ? (double)(totalTime) / (double)(waitingAmount) : 0.0);
 }
 
@@ -212,6 +212,6 @@ AverageTime calculateAverageTurnaroundTime(ProcessScheduler* processScheduler){
         }
     }
 
-    processScheduler -> averageTurnaroundTime = (double)(totalTime) / (double)(turnaroundAmount);
+    processScheduler -> averageTurnaroundTime = (turnaroundAmount > 0 ? (double)(totalTime) / (double)(turnaroundAmount) : 0.0);
     return (turnaroundAmount > 0 ? (double)(totalTime) / (double)(turnaroundAmount) : 0.0);
 }
