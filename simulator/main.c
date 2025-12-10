@@ -208,10 +208,18 @@ struct ScrolledWindowController{
 }scrolledWindowController;
 
 // scrolled window
-// figured this out, why they are binding together when there is only one listener?
-void scrolledProcessorWindow(GtkAdjustment* adjustment, gpointer userData){
-    if (simulatorProcessScheduler -> currentTimeFrame > 0)
-        gtk_scrolled_window_set_vadjustment(scrolledWindowController.ganttChartScrolledWindow, adjustment);
+// figure this out, why they are binding together when there is only one listener?
+// void scrolledProcessorWindow(GtkAdjustment* adjustment, gpointer userData){
+//     if (simulatorProcessScheduler -> currentTimeFrame > 0)
+//         gtk_scrolled_window_set_vadjustment(scrolledWindowController.ganttChartScrolledWindow, adjustment);
+// }
+
+void scrolledGanttChartWindowH(GtkAdjustment* adjustment, gpointer userData){
+    gtk_scrolled_window_set_hadjustment(scrolledWindowController.timeframeScrolledWindow, adjustment);
+}
+
+void scrolledGanttChartWindowV(GtkAdjustment* adjustment, gpointer userData){
+    gtk_scrolled_window_set_vadjustment(scrolledWindowController.processorListScrolledWindow, adjustment);
 }
 /*___________________________________________________________________*/
 
@@ -384,7 +392,10 @@ void initializeSimulator(){
     scrolledWindowController.timeframeScrolledWindow = GTK_SCROLLED_WINDOW(gtk_builder_get_object(builder, "timeframeScrolledWindow"));
     scrolledWindowController.ganttChartScrolledWindow = GTK_SCROLLED_WINDOW(gtk_builder_get_object(builder, "ganttChartScrolledWindow"));
 
-    g_signal_connect(gtk_scrolled_window_get_vadjustment(scrolledWindowController.processorListScrolledWindow), "value-changed", G_CALLBACK(scrolledProcessorWindow), NULL);
+    g_signal_connect(gtk_scrolled_window_get_hadjustment(scrolledWindowController.ganttChartScrolledWindow), "value-changed", G_CALLBACK(scrolledGanttChartWindowH), NULL);
+    g_signal_connect(gtk_scrolled_window_get_vadjustment(scrolledWindowController.ganttChartScrolledWindow), "value-changed", G_CALLBACK(scrolledGanttChartWindowV), NULL);
+    gtk_scrolled_window_set_vadjustment(scrolledWindowController.processorListScrolledWindow, gtk_scrolled_window_get_vadjustment(scrolledWindowController.ganttChartScrolledWindow));
+    gtk_scrolled_window_set_hadjustment(scrolledWindowController.timeframeScrolledWindow, gtk_scrolled_window_get_hadjustment(scrolledWindowController.ganttChartScrolledWindow));
 }
 
 void simulatorAddProcess(ProcessScheduler* processScheduler, expression infixExpression){
