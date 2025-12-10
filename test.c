@@ -166,23 +166,36 @@ void main(){
     printf("m%p? ", &m2);
     printf("m%p?\n", &m3);
 
-    ProcessScheduler* secondScheduler = createProcessScheduler(2, ON);
+    ProcessScheduler* secondScheduler = createProcessScheduler(4, ON);
     addProcess(secondScheduler, "(x+y)*(m+n)");
-    addProcess(secondScheduler, "(x+y)*(k+l)");
-    addProcess(secondScheduler, "(x+y)*(i+j)");
-    addProcess(secondScheduler, "(x+y)*(g+h)+a+b+c+d+e");
-    addProcess(secondScheduler, "(x+y)*(e+f)");
-    addProcess(secondScheduler, "q+w");
-    addProcess(secondScheduler, "c+d");
-    addProcess(secondScheduler, "a+b");
-    addProcess(secondScheduler, "a+b+c-d+e");
-    addProcess(secondScheduler, "z+x");
+    processSchedulerNextTimeframe(secondScheduler);
+    processSchedulerNextTimeframe(secondScheduler);
+
+    // ProcessorList* pl = secondScheduler -> processorList;
+    // while (pl -> next != NULL){
+    //     pl = pl -> next;
+    //     printf("pl: %d\n", (*(Processor**)(pl -> data)) -> processorID);
+
+    //     ProcessHistoryList* phl = *(ProcessHistoryList**)((*(Processor**)(pl -> data)) -> processHistoryList);
+    //     ProcessHistory* ph = *(ProcessHistory**)(phl -> data);
+    //     printf("processhistory: s-%d e-%d p-%s d-%s r-%s\n", ph -> timeStart, ph -> timeEnd, ph -> executedProcess -> dependencyInformation -> infixExpression, ph -> executedExpression -> prefixExpression, ph -> executedExpression -> expressionRepresentation);
+    // }
+
+    // addProcess(secondScheduler, "(x+y)*(k+l)");
+    // addProcess(secondScheduler, "(x+y)*(i+j)");
+    // addProcess(secondScheduler, "(x+y)*(g+h)+a+b+c+d+e");
+    // addProcess(secondScheduler, "(x+y)*(e+f)");
+    // addProcess(secondScheduler, "q+w");
+    // addProcess(secondScheduler, "c+d");
+    // addProcess(secondScheduler, "a+b");
+    // addProcess(secondScheduler, "a+b+c-d+e");
+    // addProcess(secondScheduler, "z+x");
 
     //processSchedulerNextTimeframe(secondScheduler);
 
-    for (int i = 0; i < 20; i++){
-        processSchedulerNextTimeframe(secondScheduler);
-    }
+    // for (int i = 0; i < 20; i++){
+    //     processSchedulerNextTimeframe(secondScheduler);
+    // }
     // processSchedulerNextTimeframe(secondScheduler);
     // processSchedulerNextTimeframe(secondScheduler);
     // processSchedulerNextTimeframe(secondScheduler);

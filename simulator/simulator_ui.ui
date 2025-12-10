@@ -150,8 +150,11 @@
                                         <property name="hexpand">TRUE</property>
 
                                         <child>
-                                            <object id="simulatorGanttChart" class="GtkListBox">
+                                            <object id="simulatorGanttChart" class="GtkBox">
                                                 <style><class name="simulatorGanttChart"/></style>
+                                                <property name="orientation">1</property>
+                                                <property name="spacing">16</property>
+                                            
                                             </object>
                                         </child>
                                     </object>

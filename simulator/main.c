@@ -21,7 +21,7 @@ struct SimulatorUIController{
 
     GtkBox* timeframeList;
     GtkBox* simulatorProcessorList;
-    GtkListBox* simulatorGanttChart;
+    GtkBox* simulatorGanttChart;
 
     GtkLabel* numberOfProcessorLabel;
     GtkLabel* currentTimeframeLabel;
@@ -148,6 +148,86 @@ char* intToString(int num){
 
 
 /*___________________________________________________________________*/
+// widget constructor
+
+GtkWidget* createTimeframeGanttChart(ProcessHistory* processHistory){
+    GtkBox* newBox = GTK_BOX(gtk_box_new(GTK_ORIENTATION_VERTICAL, 0));
+    GtkLabel* executingProcessLabel = GTK_LABEL(gtk_label_new("Executing process:"));
+    GtkLabel* executingProcessIDLabel = GTK_LABEL(gtk_label_new(intToString(processHistory -> executedProcess -> processID)));
+    GtkLabel* expressionLabel = GTK_LABEL(gtk_label_new("Expression:"));
+    GtkLabel* expressionDisplayLabel = GTK_LABEL(gtk_label_new(processHistory -> executedProcess -> dependencyInformation -> infixExpression));
+    GtkLabel* executingThreadLabel = GTK_LABEL(gtk_label_new("Executing thread:"));
+    GtkLabel* executingThreadDisplayLabel = GTK_LABEL(gtk_label_new(""));
+    GtkLabel* threadResultLabel = GTK_LABEL(gtk_label_new("Result:"));
+    GtkLabel* threadResultDisplayLabel = GTK_LABEL(gtk_label_new(processHistory -> executedExpression -> expressionRepresentation));
+
+    gtk_widget_set_size_request(GTK_WIDGET(newBox), 160, 160);
+
+    GtkBox* dummyBox = GTK_BOX(gtk_box_new(GTK_ORIENTATION_VERTICAL, 0));
+    gtk_widget_set_vexpand(GTK_WIDGET(dummyBox), TRUE);
+    gtk_widget_set_valign(GTK_WIDGET(dummyBox), GTK_ALIGN_CENTER);
+    gtk_widget_set_halign(GTK_WIDGET(dummyBox), GTK_ALIGN_CENTER);
+
+    GtkScrolledWindow* scrolledWindow = GTK_SCROLLED_WINDOW(gtk_scrolled_window_new());
+    gtk_widget_set_vexpand(GTK_WIDGET(scrolledWindow), TRUE);
+    gtk_widget_set_hexpand(GTK_WIDGET(scrolledWindow), TRUE);
+
+    operand infixExpression = malloc(sizeof(char) * 4);
+    infixExpression[3] = '\0';
+    infixExpression[0] = processHistory -> executedExpression -> operandA[0];
+    infixExpression[1] = processHistory -> executedExpression -> expressionOperator;
+    infixExpression[2] = processHistory -> executedExpression -> operandB[0];
+    gtk_label_set_label(executingThreadDisplayLabel, infixExpression);
+
+    GtkBox* executingProcessSection = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8));
+    GtkBox* expressionSection = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 4));
+    GtkBox* executingThreadSection = GTK_BOX(gtk_box_new(GTK_ORIENTATION_VERTICAL, 0));
+    GtkBox* threadResultSection = GTK_BOX(gtk_box_new(GTK_ORIENTATION_VERTICAL, 4));
+
+    gtk_box_append(executingProcessSection, GTK_WIDGET(executingProcessLabel));
+    gtk_box_append(executingProcessSection, GTK_WIDGET(executingProcessIDLabel));
+
+    gtk_box_append(expressionSection, GTK_WIDGET(expressionLabel));
+    gtk_box_append(expressionSection, GTK_WIDGET(expressionDisplayLabel));
+
+    gtk_box_append(executingThreadSection, GTK_WIDGET(executingThreadLabel));
+    gtk_box_append(executingThreadSection, GTK_WIDGET(executingThreadDisplayLabel));
+
+    gtk_box_append(threadResultSection, GTK_WIDGET(threadResultLabel));
+    gtk_box_append(threadResultSection, GTK_WIDGET(threadResultDisplayLabel));
+
+    gtk_box_append(dummyBox, GTK_WIDGET(executingProcessSection));
+    gtk_box_append(dummyBox, GTK_WIDGET(expressionSection));
+    gtk_box_append(dummyBox, GTK_WIDGET(executingThreadSection));
+    gtk_box_append(dummyBox, GTK_WIDGET(threadResultSection));
+
+    gtk_scrolled_window_set_child(scrolledWindow, GTK_WIDGET(dummyBox));
+
+    gtk_box_append(newBox, GTK_WIDGET(scrolledWindow));
+
+    return GTK_WIDGET(newBox);
+}
+
+GtkWidget* createEmptyGanttChart(){
+    GtkBox* newBox = GTK_BOX(gtk_box_new(GTK_ORIENTATION_VERTICAL, 0));
+    GtkLabel* newLabel = GTK_LABEL(gtk_label_new("-- processor free --"));
+    
+    GtkBox* dummyBox = GTK_BOX(gtk_box_new(GTK_ORIENTATION_VERTICAL, 0));
+    gtk_widget_set_valign(GTK_WIDGET(dummyBox), GTK_ALIGN_CENTER);
+    gtk_widget_set_vexpand(GTK_WIDGET(dummyBox), TRUE);
+
+    gtk_widget_set_size_request(GTK_WIDGET(newBox), 160, 160);
+
+    gtk_box_append(dummyBox, GTK_WIDGET(newLabel));
+    gtk_box_append(newBox, GTK_WIDGET(dummyBox));
+
+    return GTK_WIDGET(newBox);
+}
+
+/*___________________________________________________________________*/
+
+
+/*___________________________________________________________________*/
 // simulator
 void resetSimulator(){
     free(simulatorProcessScheduler);
@@ -163,9 +243,10 @@ void initializeSimulator(){
     uiController.processList = GTK_LIST_BOX(gtk_builder_get_object(builder, "processList"));
     uiController.simulatorProcessorList = GTK_BOX(gtk_builder_get_object(builder, "simulatorProcessorList"));
     uiController.timeframeList = GTK_BOX(gtk_builder_get_object(builder, "timeframeListBox"));
+    uiController.simulatorGanttChart = GTK_BOX(gtk_builder_get_object(builder, "simulatorGanttChart"));
 
-    simulatorProcessScheduler = createProcessScheduler(2, ON);
-    simulatorAddProcess(simulatorProcessScheduler, "(x+y)*(a+b)");
+    simulatorProcessScheduler = createProcessScheduler(8, ON);
+    //simulatorAddProcess(simulatorProcessScheduler, "(x+y)*(a+b)");
 
     uiController.numberOfProcessorLabel = GTK_LABEL(gtk_builder_get_object(builder, "numberOfProcessorLabel"));
     uiController.currentTimeframeLabel = GTK_LABEL(gtk_builder_get_object(builder, "currentTimeframeLabel"));
@@ -207,15 +288,18 @@ gboolean updateProcessorList(){
         GtkBox* newProcessorBox = GTK_BOX(gtk_box_new(GTK_ORIENTATION_VERTICAL, 0));
         GtkLabel* newProcessorLabel = GTK_LABEL(gtk_label_new(intToString(i+1)));
 
+        GtkBox* dummyBox = GTK_BOX(gtk_box_new(GTK_ORIENTATION_VERTICAL, 0));
+        gtk_widget_set_valign(GTK_WIDGET(dummyBox), GTK_ALIGN_CENTER);
+        gtk_widget_set_vexpand(GTK_WIDGET(dummyBox), TRUE);
+
         gtk_widget_add_css_class(GTK_WIDGET(newProcessorBox), "processorBox");
         gtk_widget_add_css_class(GTK_WIDGET(newProcessorLabel), "processorLabel");
 
-        gtk_widget_set_vexpand(GTK_WIDGET(newProcessorBox), TRUE);
-        gtk_box_set_homogeneous(newProcessorBox, TRUE);
         gtk_widget_set_valign(GTK_WIDGET(newProcessorBox), GTK_ALIGN_CENTER);
         gtk_widget_set_size_request(GTK_WIDGET(newProcessorBox), 160, 160);
 
-        gtk_box_append(newProcessorBox, GTK_WIDGET(newProcessorLabel));
+        gtk_box_append(dummyBox, GTK_WIDGET(newProcessorLabel));
+        gtk_box_append(newProcessorBox, GTK_WIDGET(dummyBox));
 
         gtk_box_append(uiController.simulatorProcessorList, GTK_WIDGET(newProcessorBox));
     }
@@ -224,7 +308,52 @@ gboolean updateProcessorList(){
 }
 
 gboolean updateGanttChart(){
+    GtkWidget* ganttChartChild = gtk_widget_get_first_child(GTK_WIDGET(uiController.simulatorGanttChart));
+    while (ganttChartChild != NULL){
+        gtk_box_remove(uiController.simulatorGanttChart, ganttChartChild);
+        ganttChartChild = gtk_widget_get_first_child(GTK_WIDGET(uiController.simulatorGanttChart));
+    }
 
+    ProcessorList* processorList = simulatorProcessScheduler -> processorList;
+    Processor* hoveringProcessor = NULL;
+
+    while (processorList -> next != NULL){
+        processorList = processorList -> next;
+        hoveringProcessor = *((Processor**)(processorList -> data));
+
+        printf("current processor: %d\n", hoveringProcessor -> processorID);
+
+        // start from the presume "maximum" timeframe the processor can be
+        int processorCurrentTimeframe = simulatorProcessScheduler -> currentTimeFrame;
+        // start pointing at the first process of the processHistoryList instead of the HEAD of list
+        ProcessHistoryList* processHistoryList = hoveringProcessor -> processHistoryList;
+        if (processHistoryList -> next != NULL)
+            processHistoryList = processHistoryList -> next;
+
+        // the GtkBox for storing process history
+        GtkBox* processorGanttChartBox = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 16));
+
+        for (processorCurrentTimeframe; processorCurrentTimeframe > 0; processorCurrentTimeframe--){
+            ProcessHistory* hoveringHistory = NULL;
+            if (processHistoryList -> data != NULL)
+                hoveringHistory = *(ProcessHistory**)(processHistoryList -> data);
+            
+            if (hoveringHistory != NULL && hoveringHistory -> timeEnd == processorCurrentTimeframe){
+                gtk_box_prepend(processorGanttChartBox, createTimeframeGanttChart(hoveringHistory));
+
+                if (processHistoryList -> next != NULL){
+                    processHistoryList = processHistoryList -> next;
+                }
+            }else {
+                gtk_box_prepend(processorGanttChartBox, createEmptyGanttChart());
+            }
+        }
+
+        // add independent gantt box into the scrolled window box
+        gtk_box_append(uiController.simulatorGanttChart, GTK_WIDGET(processorGanttChartBox));
+    }
+
+    return TRUE;
 }
 
 gboolean updateTimeframeList(){
@@ -276,11 +405,13 @@ static void activate(GtkApplication* app, gpointer user_data){
 
     builder = gtk_builder_new();
     gtk_builder_add_from_file(builder, "simulator_ui.ui", NULL);
-    GObject* windowContent = gtk_builder_get_object(builder, "windowContent");
-    gtk_window_set_child(GTK_WINDOW(window), GTK_WIDGET(windowContent));
+
     cssProvider = gtk_css_provider_new();
     gtk_css_provider_load_from_path(cssProvider, "simulator_ui.css");
     gtk_style_context_add_provider_for_display(gdk_display_get_default(), GTK_STYLE_PROVIDER(cssProvider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+    
+    GObject* windowContent = gtk_builder_get_object(builder, "windowContent");
+    gtk_window_set_child(GTK_WINDOW(window), GTK_WIDGET(windowContent));
 
     initializeSimulator();
 
@@ -290,6 +421,7 @@ static void activate(GtkApplication* app, gpointer user_data){
     g_timeout_add_seconds(1, updateProcessList, NULL);
     g_timeout_add_seconds(1, updateProcessorList, NULL);
     g_timeout_add_seconds(1, updateTimeframeList, NULL);
+    g_timeout_add_seconds(1, updateGanttChart, NULL);
     g_timeout_add_seconds(1, updateLabelDisplay, NULL);
 }
 
