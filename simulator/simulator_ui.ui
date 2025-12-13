@@ -23,9 +23,12 @@
                 <!-- Scrollable -->
                 <child>
                     <object id="processListWindow" class="GtkScrolledWindow">
+                        <style><class name="processListWindow"/></style>
                         <property name="vexpand">TRUE</property>
+
                         <child>
                             <object id="processList" class="GtkListBox">
+                                <style><class name="processList"/></style>
                                 <property name="selection-mode">0</property>
                                 <property name="focusable">FALSE</property>
                                 <property name="can-target">FALSE</property>
@@ -37,6 +40,7 @@
                 <!-- Button -->
                 <child>
                     <object id="addProcessButton" class="GtkButton">
+                        <style><class name="addProcessButton"/></style>
                         <property name="label">Add process</property>
                         <signal name="clicked" handler="addProcessButton__clicked"/>
                     </object>
@@ -57,6 +61,7 @@
 
                         <child>
                             <object id="simulationLabel" class="GtkLabel">
+                                <style><class name="simulationLabel"/></style>
                                 <property name="label">Simulation</property>
                             </object>
                         </child>
@@ -64,6 +69,8 @@
                         <!-- timeframe display section -->
                         <child>
                             <object id="timeframe_section" class="GtkBox">
+                                <style><class name="timeframe_section"/></style>
+
                                 <!-- dummy GtkBox-->
                                 <child>
                                     <!-- split the box into two triangle section for displaying "processor" and "timeframe" label -->
@@ -71,18 +78,19 @@
                                         <style><class name="timeframeDummySection"/></style>
                                         <property name="width-request">160</property>
                                         <property name="height-request">80</property>
-                                        <property name="orientation">0</property>
+                                        <property name="orientation">1</property>
                                         <property name="homogeneous">TRUE</property>
                                         
                                         <!-- processor label -->
                                         <child>
                                             <object class="GtkBox">
-                                                <property name="halign">1</property>
-                                                <property name="valign">2</property>
+                                                <property name="halign">3</property>
+                                                <property name="valign">3</property>
 
                                                 <child>
                                                     <object class="GtkLabel">
-                                                        <property name="label">Processor</property>
+                                                        <style><class name="timeframeLabel"/></style>
+                                                        <property name="label">Timeframe</property>
                                                     </object>
                                                 </child>
                                             </object>
@@ -91,12 +99,13 @@
                                         <!-- timeframe label -->
                                         <child>
                                             <object class="GtkBox">
-                                                <property name="halign">2</property>
-                                                <property name="valign">1</property>
+                                                <property name="halign">3</property>
+                                                <property name="valign">3</property>
 
                                                 <child>
                                                     <object class="GtkLabel">
-                                                        <property name="label">Timeframe</property>
+                                                        <style><class name="processorLabel"/></style>
+                                                        <property name="label">Processor</property>
                                                     </object>
                                                 </child>
                                             </object>
@@ -147,6 +156,7 @@
                                 <!-- ganttchart progress list -->
                                 <child>
                                     <object id="ganttChartScrolledWindow" class="GtkScrolledWindow">
+                                        <style><class name="ganttChartScrolledWindow"/></style>
                                         <property name="hexpand">TRUE</property>
 
                                         <child>
@@ -185,6 +195,7 @@
 
                                         <child>
                                             <object id="simulatorConfigurationLabel" class="GtkLabel">
+                                                <style><class name="simulatorConfigurationLabel"/></style>
                                                 <property name="label">Simulator configuration</property>
                                             </object>
                                         </child>
@@ -194,6 +205,7 @@
                                 <!-- number of processor & current timeframe -->
                                 <child>
                                     <object class="GtkBox">
+                                        <style><class name="simulatorConfigurationLabel"/></style>
                                         <property name="orientation">1</property>
 
                                         <!-- display number of processor -->
@@ -240,6 +252,7 @@
                                         
                                         <child>
                                             <object class="GtkButton">
+                                                <style><class name="stopAutoButton"/></style>
                                                 <property name="label">Reset simulator</property>
                                                 <signal name="clicked" handler="resetSimulator__clicked" />
                                             </object>
@@ -253,6 +266,7 @@
 
                                                 <child>
                                                     <object id="autoButton" class="GtkButton">
+                                                        <style><class name="autoButton"/></style>
                                                         <property name="label">Auto</property>
                                                         <signal name="clicked" handler="autoButton__clicked"/>
                                                     </object>
@@ -260,6 +274,7 @@
 
                                                 <child>
                                                     <object id="stopAutoButton" class="GtkButton">
+                                                        <style><class name="stopAutoButton"/></style>
                                                         <property name="label">Stop auto</property>
                                                         <signal name="clicked" handler="stopAutoButton__clicked"/>
                                                     </object>
@@ -267,6 +282,7 @@
 
                                                 <child>
                                                     <object id="nextTimeFrameButton" class="GtkButton">
+                                                        <style><class name="normalButton"/></style>
                                                         <property name="label">Next timeframe</property>
                                                         <signal name="clicked" handler="nextTimeFrameButton__clicked"/>
                                                     </object>
@@ -281,6 +297,7 @@
                         <!-- simulator details list -->
                         <child>
                             <object class="GtkBox">
+                                <style><class name="simulatorConfigurationSection"/></style>
                                 <property name="orientation">1</property>
 
                                 <!-- simulator details label -->
@@ -291,6 +308,7 @@
 
                                         <child>
                                             <object id="simulatorDetailsLabel" class="GtkLabel">
+                                                <style><class name="simulatorConfigurationLabel"/></style>
                                                 <property name="label">Simulator details</property>
                                             </object>
                                         </child>
@@ -300,6 +318,7 @@
                                 <!-- list of details -->
                                 <child>
                                     <object class="GtkBox">
+                                        <style><class name="simulatorConfigurationLabel"/></style>
                                         <property name="orientation">1</property>
                                         <property name="homogeneous">TRUE</property>
                                         <property name="spacing">8</property>
