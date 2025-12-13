@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+    <object id="windowContent" class="GtkBox">
+        <style><class name="windowContent"/></style>
+        <!-- could not parse enum into property, so the Gtk.Orientation.GTK_ORIENTATION_HORIZONTAL is represented as its integer value 0 here -->
+        <property name="orientation">0</property>
+        <property name="spacing">8</property>
+
+        <child>
+            <object id="processSection" class="GtkBox">
+                <style><class name="processSection"/></style>
+                <property name="orientation">1</property>
+
+                <!-- Label: Process -->
+                <child>
+                    <object id="processLabel" class="GtkLabel">
+                        <style><class name="processLabel"/></style>
+                        <property name="label">Process</property>
+                        <property name="width-chars">32</property>
+                    </object>
+                </child>
+
+                <!-- Scrollable -->
+                <child>
+                    <object id="processListWindow" class="GtkScrolledWindow">
+                        <style><class name="processListWindow"/></style>
+                        <property name="vexpand">TRUE</property>
+
+                        <child>
+                            <object id="processList" class="GtkListBox">
+                                <style><class name="processList"/></style>
+                                <property name="selection-mode">0</property>
+                                <property name="focusable">FALSE</property>
+                                <property name="can-target">FALSE</property>
+                            </object>
+                        </child>
+                    </object>
+                </child>
+
+                <!-- Button -->
+                <child>
+                    <object id="addProcessButton" class="GtkButton">
+                        <style><class name="addProcessButton"/></style>
+                        <property name="label">Add process</property>
+                        <signal name="clicked" handler="addProcessButton__clicked"/>
+                    </object>
+                </child>
+            </object>
+        </child>
+
+        <child>
+            <object id="simulationSection" class="GtkBox">
+                <style><class name="simulationSection"/></style>
+                <property name="orientation">1</property>
+                <property name="hexpand">TRUE</property>
+
+                <child>
+                    <object id="processorDisplaySection" class="GtkBox">
+                        <property name="vexpand">TRUE</property>
+                        <property name="orientation">1</property>
+
+                        <child>
+                            <object id="simulationLabel" class="GtkLabel">
+                                <style><class name="simulationLabel"/></style>
+                                <property name="label">Simulation</property>
+                            </object>
+                        </child>
+
+                        <!-- timeframe display section -->
+                        <child>
+                            <object id="timeframe_section" class="GtkBox">
+                                <style><class name="timeframe_section"/></style>
+
+                                <!-- dummy GtkBox-->
+                                <child>
+                                    <!-- split the box into two triangle section for displaying "processor" and "timeframe" label -->
+                                    <object class="GtkBox">
+                                        <style><class name="timeframeDummySection"/></style>
+                                        <property name="width-request">160</property>
+                                        <property name="height-request">80</property>
+                                        <property name="orientation">1</property>
+                                        <property name="homogeneous">TRUE</property>
+                                        
+                                        <!-- processor label -->
+                                        <child>
+                                            <object class="GtkBox">
+                                                <property name="halign">3</property>
+                                                <property name="valign">3</property>
+
+                                                <child>
+                                                    <object class="GtkLabel">
+                                                        <style><class name="timeframeLabel"/></style>
+                                                        <property name="label">Timeframe</property>
+                                                    </object>
+                                                </child>
+                                            </object>
+                                        </child>
+
+                                        <!-- timeframe label -->
+                                        <child>
+                                            <object class="GtkBox">
+                                                <property name="halign">3</property>
+                                                <property name="valign">3</property>
+
+                                                <child>
+                                                    <object class="GtkLabel">
+                                                        <style><class name="processorLabel"/></style>
+                                                        <property name="label">Processor</property>
+                                                    </object>
+                                                </child>
+                                            </object>
+                                        </child>
+                                    </object>
+                                </child>
+
+                                <!-- timeframe display -->
+                                <child>
+                                    <object id="timeframeScrolledWindow" class="GtkScrolledWindow">
+                                        <child>
+                                            <object id="timeframeListBox" class="GtkBox">
+                                                <style><class name="timeframeListBox"/></style>
+                                                <property name="hexpand">TRUE</property>
+                                                <property name="orientation">0</property>
+                                                <property name="spacing">16</property>
+
+                                            </object>
+                                        </child>
+                                    </object>
+                                </child>
+                            </object>
+                        </child>
+
+                        <!-- processor and gantt chart display section -->
+                        <child>
+                            <object id="processor_ganttchart_section" class="GtkBox">
+                                <style><class name="processor_ganttchart_section"/></style>
+                                <property name="vexpand">TRUE</property>
+
+                                <!-- processor list -->
+                                <child>
+                                    <object id="processorListScrolledWindow" class="GtkScrolledWindow">
+                                        <style><class name="processorListScrolledWindow"/></style>
+                                        <property name="width-request">160</property>
+
+                                        <child>
+                                            <object id="simulatorProcessorList" class="GtkBox">
+                                                <style><class name="simulatorProcessorList"/></style>
+                                                <property name ="orientation">1</property>
+                                                <property name="spacing">16</property>
+
+                                            </object>
+                                        </child>
+                                    </object>
+                                </child>
+
+                                <!-- ganttchart progress list -->
+                                <child>
+                                    <object id="ganttChartScrolledWindow" class="GtkScrolledWindow">
+                                        <style><class name="ganttChartScrolledWindow"/></style>
+                                        <property name="hexpand">TRUE</property>
+
+                                        <child>
+                                            <object id="simulatorGanttChart" class="GtkBox">
+                                                <style><class name="simulatorGanttChart"/></style>
+                                                <property name="orientation">1</property>
+                                                <property name="spacing">16</property>
+                                            
+                                            </object>
+                                        </child>
+                                    </object>
+                                </child>
+                            </object>
+                        </child>
+                    </object>
+                </child>
+
+                <!-- simulator details: configuration + process details (average waiting time, turnaround time, etc) -->
+                <child>
+                    <!-- seperate into configuration part and details part -->
+                    <object class="GtkBox">
+                        <property name="orientation">0</property>
+                        <property name="homogeneous">TRUE</property>
+
+                        <!-- simulator configuration -->
+                        <child>
+                            <object id="simulatorConfigurationSection" class="GtkBox">
+                                <style><class name="simulatorConfigurationSection"/></style>
+                                <property name="orientation">1</property>
+                                <property name="spacing">16</property>
+                                
+                                <!-- simulator configuration label -->
+                                <child>
+                                    <object class="GtkBox">
+                                        <property name="halign">3</property>
+
+                                        <child>
+                                            <object id="simulatorConfigurationLabel" class="GtkLabel">
+                                                <style><class name="simulatorConfigurationLabel"/></style>
+                                                <property name="label">Simulator configuration</property>
+                                            </object>
+                                        </child>
+                                    </object>
+                                </child>
+
+                                <!-- number of processor & current timeframe -->
+                                <child>
+                                    <object class="GtkBox">
+                                        <style><class name="simulatorConfigurationLabel"/></style>
+                                        <property name="orientation">1</property>
+
+                                        <!-- display number of processor -->
+                                        <child>
+                                            <object class="GtkBox">
+                                                <property name="orientation">0</property>
+                                                <property name="homogeneous">TRUE</property>
+
+                                                <child>
+                                                    <object class="GtkLabel">
+                                                        <property name="label">Number of processor:</property>
+                                                    </object>
+                                                </child>
+                                                <child>
+                                                    <object id="numberOfProcessorLabel" class="GtkLabel">
+                                                    </object>
+                                                </child>
+                                            </object>
+                                        </child>
+
+                                        <!-- display current timeframe -->
+                                        <child>
+                                            <object class="GtkBox">
+                                                <property name="orientation">0</property>
+                                                <property name="homogeneous">TRUE</property>
+
+                                                <child>
+                                                    <object class="GtkLabel">
+                                                        <property name="label">Current timeframe:</property>
+                                                    </object>
+                                                </child>
+                                                <child>
+                                                    <object id="currentTimeframeLabel" class="GtkLabel">
+                                                    </object>
+                                                </child>
+                                            </object>
+                                        </child>
+                                    </object>
+                                </child>
+
+                                <!-- simulator configuration button section -->
+                                <child>
+                                    <object id="simulatorConfigurationButtonSection" class="GtkBox">
+                                        
+                                        <child>
+                                            <object class="GtkButton">
+                                                <style><class name="stopAutoButton"/></style>
+                                                <property name="label">Reset simulator</property>
+                                                <signal name="clicked" handler="resetSimulator__clicked" />
+                                            </object>
+                                        </child>
+
+                                        <child>
+                                            <object class="GtkBox">
+                                                <property name="hexpand">TRUE</property>
+                                                <property name="halign">2</property>
+                                                <property name="spacing">16</property>
+
+                                                <child>
+                                                    <object id="autoButton" class="GtkButton">
+                                                        <style><class name="autoButton"/></style>
+                                                        <property name="label">Auto</property>
+                                                        <signal name="clicked" handler="autoButton__clicked"/>
+                                                    </object>
+                                                </child>
+
+                                                <child>
+                                                    <object id="stopAutoButton" class="GtkButton">
+                                                        <style><class name="stopAutoButton"/></style>
+                                                        <property name="label">Stop auto</property>
+                                                        <signal name="clicked" handler="stopAutoButton__clicked"/>
+                                                    </object>
+                                                </child>
+
+                                                <child>
+                                                    <object id="nextTimeFrameButton" class="GtkButton">
+                                                        <style><class name="normalButton"/></style>
+                                                        <property name="label">Next timeframe</property>
+                                                        <signal name="clicked" handler="nextTimeFrameButton__clicked"/>
+                                                    </object>
+                                                </child>
+                                            </object>
+                                        </child>
+                                    </object>
+                                </child>
+                            </object>
+                        </child>
+
+                        <!-- simulator details list -->
+                        <child>
+                            <object class="GtkBox">
+                                <style><class name="simulatorConfigurationSection"/></style>
+                                <property name="orientation">1</property>
+
+                                <!-- simulator details label -->
+                                <child>
+                                    <object class="GtkBox">
+                                        <property name="halign">3</property>
+                                        <property name="valign">3</property>
+
+                                        <child>
+                                            <object id="simulatorDetailsLabel" class="GtkLabel">
+                                                <style><class name="simulatorConfigurationLabel"/></style>
+                                                <property name="label">Simulator details</property>
+                                            </object>
+                                        </child>
+                                    </object>
+                                </child>
+
+                                <!-- list of details -->
+                                <child>
+                                    <object class="GtkBox">
+                                        <style><class name="simulatorConfigurationLabel"/></style>
+                                        <property name="orientation">1</property>
+                                        <property name="homogeneous">TRUE</property>
+                                        <property name="spacing">8</property>
+                                        <property name="halign">3</property>
+                                        <property name="valign">3</property>
+                                        
+                                        <!-- average response time -->
+                                        <child>
+                                            <object class="GtkBox">
+                                                <property name="orientation">0</property>
+                                                <property name="homogeneous">TRUE</property>
+
+                                                <child>
+                                                    <object class="GtkLabel">
+                                                        <property name="label">Average response time:</property>
+                                                    </object>
+                                                </child>
+
+                                                <child>
+                                                    <object id="averageResponseTimeLabel" class="GtkLabel">
+                                                    </object>
+                                                </child>
+                                            </object>
+                                        </child>
+
+                                        <!-- average waiting time -->
+                                        <child>
+                                            <object class="GtkBox">
+                                                <property name="orientation">0</property>
+                                                <property name="homogeneous">TRUE</property>
+
+                                                <child>
+                                                    <object class="GtkLabel">
+                                                        <property name="label">Average waiting time:</property>
+                                                    </object>
+                                                </child>
+
+                                                <child>
+                                                    <object id="averageWaitingTimeLabel" class="GtkLabel">
+                                                    </object>
+                                                </child>
+                                            </object>
+                                        </child>
+
+                                        <!-- average turnaround time -->
+                                        <child>
+                                            <object class="GtkBox">
+                                                <property name="orientation">0</property>
+                                                <property name="homogeneous">TRUE</property>
+
+                                                <child>
+                                                    <object class="GtkLabel">
+                                                        <property name="label">Average turnaround time:</property>
+                                                    </object>
+                                                </child>
+
+                                                <child>
+                                                    <object id="averageTurnaroundTimeLabel" class="GtkLabel">
+                                                    </object>
+                                                </child>
+                                            </object>
+                                        </child>
+                                    </object>
+                                </child>
+
+                            </object>
+                        </child>
+
+                    </object>
+                </child>
+
+            </object>
+        </child>
+    </object>
+</interface>
