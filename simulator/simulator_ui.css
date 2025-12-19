@@ -1,56 +1,255 @@
 .windowContent{
-    background-color: aqua;
+    background-color: #BFE4FB;
 }
 
 .processSection{
-    background-color: magenta;
+    
 }
 
 .processLabel{
+    background-color: #243ACE;
+    color: white;
+    font-size: large;
+    font-weight: bold;
+
     padding: 4px;
-    margin: 4px;
 }
 
 .processListWindow{
-    background-color: violet;
+    margin: 4px;
+    border: solid #243ACE 4px;
 }
 
-.simulationSection{
-    background-color: pink;
+.processList{
+    background-color: #B0C8F6;
 }
 
+.processListBox{
+    margin: 4px;
+    padding: 4px;
+
+    border: solid #243ACE 4px;
+}
+
+.processIDsection{
+    font-weight: bold;
+
+    background-color: #3f3f3f;
+    color: white;
+}
+
+.processExpressionSection{
+    font-weight: bold;
+}
+
+.TERMINATED{
+    background-color: #EEEEEE;
+}
+
+.READY{
+    background-color: #00FF00;
+}
+
+.NEW{
+    background-color: #66FF00;
+}
+
+.RUNNING{
+    background-color: #FCAE1E;
+}
+
+.WAITING{
+    background-color: #DC143C;
+}
+
+.addProcessButton{
+    margin: 8px;
+
+    font-weight: bold;
+    
+    border-radius: 8px;
+
+    color: #E5E4E2;
+    background: #243ACE;
+}
+
+.addProcessButton:hover{
+    color: white;
+    background: #152176;
+}
+
+.simulationLabel{
+    font-size: large;
+    font-weight: bold;
+
+    background: #243ACE;
+    color: white;
+}
+
+/* simulator configuration */
 .simulatorConfigurationSection{
-    background-color: slateblue;
+    padding: 4px;
+    margin: 4px;
+
+    border: solid #243ACE 4px;
+
+    background-color: #B0C8F6;
+}
+
+.simulatorConfigurationLabel{
+    font-weight: bold;
+    font-size: large;
+    text-decoration: underline;
 }
 
 /* timeframe section */
+.timeframe_section{
+    margin-top: 4px;
+}
+
 .timeframeDummySection{
     background: linear-gradient(
         to left bottom,
-        #15EAC4 0%,
-        #15EAC4 50%,
-        #EA153B 50%,
-        #EA153B 100%
+        #2ED1C5 0%,
+        #2ED1C5 50%,
+        #D12E3A 50%,
+        #D12E3A 100%
     );
+
+    border-top: solid 4px #243ACE;
+    border-left: solid 4px #243ACE;
+    border-right: solid 4px #243ACE;
+}
+
+.processorLabel{
+    margin-right: 64px;
+
+    font-weight: bold;
+
+    color: #F5FEFD;
+}
+
+.timeframeLabel{
+    margin-left: 64px;
+
+    font-weight: bold;
+
+    color: black;
 }
 
 .timeframeListBox{
-    background-color: teal;
+    border-right: solid 4px #243ACE;
+    border-top: solid 4px #243ACE;
+
+    background-color: #76E1D9;
+}
+
+.newTimeframeBox{
+    font-weight: bold;
+
+    background-color: #2ED1C5;
+}
+
+.ganttChartScrolledWindow{
+    border-right: solid 4px #243ACE;
+    border-top: solid 4px #243ACE;
+    border-bottom: solid 4px #243ACE;
+}
+
+.processorGanttChartBox{
+    background-color: #2ED1C5;
+
+    border-top: solid 4px #243ACE;
+    border-bottom: solid 4px #243ACE;
+}
+
+.timeframeGanttChart{
+    background-color: #FCAE1E;
+}
+
+.executingProcessSection{
+    font-weight: bold;
+
+    background-color: #3f3f3f;
+    color: white;
+}
+
+.expressionSection{
+    font-weight: bold;
+}
+
+.threadResultSection{
+    font-weight: bold;
+}
+
+.emptyTimeframeGanttChart{
+    background-color: #EEEEEE;
 }
 
 /* processor & gantt chart section */
 .processor_ganttchart_section{
-    background-color: crimson;
+    
 }
 
 .processorListScrolledWindow{
-    background-color: darkgoldenrod;
+    border: solid 4px #243ACE;
 }
 
 .simulatorProcessorList{
-    background-color: tomato;
+    background-color: #E1767E;
+}
+
+.processorBox{
+    border-top: solid 4px #243ACE;
+    border-bottom: solid 4px #243ACE;
+
+    background-color: #D12E3A;
+}
+
+.processorIDLabel{
+    font-weight: bold;
+    font-size: large;
+
+    color: white;
 }
 
 .simulatorGanttChart{
-    background-color: powderblue;
+    background-color: #76E1D9;
+}
+
+/* configuration section */
+.autoButton{
+    font-weight: bold;
+
+    color: #E5E4E2;
+    background: #008000;
+}
+
+.autoButton:hover{
+    color: white;
+    background: #004800;
+}
+
+.stopAutoButton{
+    font-weight: bold;
+
+    color: #E5E4E2;
+    background: #E3242B;
+}
+
+.stopAutoButton:hover{
+    color: white;
+    background: #9F1419;
+}
+
+.normalButton{
+    font-weight: bold;
+
+    color: #E5E4E2;
+    background: #243ACE;
+}
+
+.normalButton:hover{
+    color: white;
+    background: #152176;
 }

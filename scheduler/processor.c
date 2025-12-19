@@ -30,6 +30,9 @@ void processorExecuteProcessThread(void* processorExecutionArgument){
     TimeFrame startTime = ((ProcessorExecutionArgument*)(processorExecutionArgument)) -> startTime;
     TimeFrame endTime = ((ProcessorExecutionArgument*)(processorExecutionArgument)) -> endTime;
     
+    if (process -> processState == NEW)
+        process -> responseTime = startTime - process -> arrivalTime;
+
     process -> processState = RUNNING;
 
     processor -> startTime = startTime;
@@ -54,7 +57,7 @@ void processorExecuteProcessThread(void* processorExecutionArgument){
     }
 
     // lock the executed thread's parent process to modify its data
-    pthread_mutex_lock(&(process -> m_processData));
+    //pthread_mutex_lock(&(process -> m_processData));
 
     (process -> remainingBurstTime)--; // reduce its remaining burst time by 1
     executingExpression -> expressionRepresentation[0] = process -> dependencyInformation -> currentNewVariable[0]; // present the executed expression as a new variable
@@ -83,8 +86,6 @@ void processorExecuteProcessThread(void* processorExecutionArgument){
     }
     process -> dependencyInformation -> updatedPrefixExpression[strlen(updatedPrefixExpression) - 2] = '\0';
 
-    printf("updated prefix: %s\n", process -> dependencyInformation -> updatedPrefixExpression);
-
     ProcessHistory* newProcessHistory = createProcessHistory(process, executingExpression, startTime, endTime);
     processorAddProcessHistory(processor, newProcessHistory);
 
@@ -96,15 +97,9 @@ void processorExecuteProcessThread(void* processorExecutionArgument){
     process -> dependencyInformation -> independentCalculationList = getIndependentCalculation(process -> dependencyInformation -> updatedPrefixExpression);
     process -> dependencyInformation -> threadAmount = calculateThread(process -> dependencyInformation -> updatedPrefixExpression);
     process -> dependencyInformation -> dependencyAmount = calculateDependency(process -> dependencyInformation -> updatedPrefixExpression);
-    if (process -> dependencyInformation -> threadAmount <= 0){
-        process -> processState = TERMINATED;
-        process -> completionTime = endTime;
-    }else {
-        process -> processState = READY;
-    }
 
     // unlock the process' mutex after finishing modifying the data so other thread can access it
-    pthread_mutex_unlock(&(process -> m_processData));
+    //pthread_mutex_unlock(&(process -> m_processData));
 }
 
 void processorAddProcessHistory(Processor* processor, ProcessHistory* processHistory){

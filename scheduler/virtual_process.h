@@ -32,7 +32,10 @@ struct Process{
     TimeFrame completionTime;
     ProcessTime initialBurstTime;
     ProcessTime remainingBurstTime;
+    
+    ProcessTime responseTime;
     ProcessTime waitingTime;
+    ProcessTime turnaroundTime;
 };
 
 struct ProcessHistory{

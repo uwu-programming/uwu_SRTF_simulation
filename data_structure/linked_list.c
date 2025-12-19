@@ -5,7 +5,7 @@ Node* createNode(size_t dataSize, void** dataPointer){
 
     newNode -> next = NULL;
     newNode -> previous = NULL;
-    newNode -> data = malloc(dataSize);
+    newNode -> data = NULL;
     *dataPointer = newNode -> data;
 
     return newNode;
