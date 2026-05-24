@@ -8,11 +8,26 @@ typedef char* operand;
 typedef char operator;
 typedef char* expression;
 typedef enum NOTATION_TYPE notationType;
+typedef struct ExpressionInformation ExpressionInformation;
 
 enum NOTATION_TYPE{
     PREFIX = -1,
     INFIX = 0,
     POSTFIX = 1
+};
+
+struct ExpressionInformation{
+    expression prefixExpression;
+    operand operandA;
+    operand operandB;
+    operator expressionOperator;
+
+    int operandAValue;
+    int operandBValue;
+    int expressionAnswer;
+
+    operand operandOverwrite;
+    operand expressionRepresentation;
 };
 
 expression removeSpaces(expression e);
@@ -25,6 +40,6 @@ int checkPrecedence(operator o);
 
 expression infixToPrefix(expression e);
 
-expression notationConversion(expression e, notationType fromNotation, notationType toNotation);
+ExpressionInformation* createExpressionInformation(expression independentExpression);
 
 #endif

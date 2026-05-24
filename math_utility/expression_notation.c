@@ -2,8 +2,8 @@
 #include "stack.h"
 #include <string.h>
 #include <ctype.h>
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 expression removeSpaces(expression e){
     int spaces = 0;
@@ -79,7 +79,7 @@ expression infixToPrefix(expression e){
     
     int i = 0, j = 0;
     for (i; i < filteredExpressionLength; i++){
-        if (isalpha(filteredExpression[i])){
+        if (isalnum(filteredExpression[i])){
             processedExpression[j++] = filteredExpression[i];
         }else {
             currentOperator = filteredExpression[i];
@@ -125,7 +125,36 @@ expression infixToPrefix(expression e){
     return processedExpression;
 }
 
-expression notationConversion(expression e, notationType fromNotation, notationType toNotation){
+ExpressionInformation* createExpressionInformation(expression independentExpression){
+    ExpressionInformation* expressionInformation = malloc(sizeof(ExpressionInformation));
 
+    expressionInformation -> prefixExpression = malloc(sizeof(char) * 4);
+    for (int i = 0; i < 3; i++){
+        expressionInformation -> prefixExpression[i] = independentExpression[i];
+    }
+    expressionInformation -> prefixExpression[3] = '\0';
+
+    expressionInformation -> operandAValue = 1;
+    expressionInformation -> operandBValue = 1;
+
+    expressionInformation -> operandA = malloc(sizeof(char) * 2);
+    expressionInformation -> operandB = malloc(sizeof(char) * 2);
+
+    expressionInformation -> operandA[0] = independentExpression[1];
+    expressionInformation -> operandA[1] = '\0';
+    expressionInformation -> operandB[0] = independentExpression[2];
+    expressionInformation -> operandB[1] = '\0';
+
+    expressionInformation -> expressionOperator = independentExpression[0];
+
+    expressionInformation -> operandAValue = 0;
+    expressionInformation -> operandBValue = 0;
+    expressionInformation -> expressionAnswer = 0;
+
+    expressionInformation -> operandOverwrite = malloc(sizeof(char) * 2);
+    expressionInformation -> expressionRepresentation = malloc(sizeof(char) * 2);
+    expressionInformation -> operandOverwrite[1] = '\0';
+    expressionInformation -> expressionRepresentation[1] = '\0';
+
+    return expressionInformation;
 }
-
