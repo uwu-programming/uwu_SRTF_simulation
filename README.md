@@ -22,7 +22,8 @@ To compile the `.c` files into an executable file, you will need to have a C com
 7. Then, locate the `bin` directory where the gcc compiler is installed to (e.g. `C:/msys64/mingw64/bin`) and add this directory to your computer's environment path.
 8. Close and restart the MSYS2 shell and test if the gcc compiler has successfully installed by running the following command:<br> `where gcc`
 9. If it is verified that the gcc compiler has successfully installed, you can then use the MSYS2 shell to change the directory into the [simulator directory](simulator/).
-10. Finally, to compile the C code, run: <br>`gcc $(pkg-config --cflags gtk4) -o main main.c $(pkg-config --libs gtk4) -I../data_structure -I../math_utility -I../scheduler ../data_structure/linked_list.c ../data_structure/stack.c ../math_utility/expression_notation.c ../scheduler/process_data_dependency.c ../scheduler/process_scheduler.c ../scheduler/virtual_process.c ../scheduler/processor.c`
+10. Finally, to compile the C code, run: <br>`gcc $(pkg-config --cflags gtk4) -o main main.c $(pkg-config --libs gtk4) -I../data_structure -I../math_utility -I../scheduler ../data_structure/linked_list.c ../data_structure/stack.c ../math_utility/expression_notation.c ../scheduler/process_data_dependency.c ../scheduler/process_scheduler.c ../scheduler/virtual_process.c ../scheduler/processor.c`<br>
+(the entire string is one command)
 11. You should see the compiler compile the C code and output `main.exe` at the end; you can then run the executable file to start the simulator program.
 
 ## Using the simulator
@@ -46,8 +47,8 @@ Operator can be represented by special characters:
   
 #### Example 
 - `(a+b) * (c+d)`
-- a + b * c
-- a - b - c
+- `a + b * c`
+- `a - b - c`
 
 #### Operator precedence
 The simulator supports operator precedence as the following:
@@ -93,3 +94,4 @@ Threads of a process can be completed concurrently if data dependency does not e
 | **C1**  | a+b = A | A*B = C |
 | **C2**  | c+d = B |   N/A   |
 | **C3**  |   N/A   |   N/A   |
+
