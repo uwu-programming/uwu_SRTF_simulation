@@ -43,7 +43,7 @@ char* intToString(int num);
 char* doubleToString(double num);
 
 void startSimulator();
-void resetSimulator();
+void resetSimulator(int processorCoreAmount);
 void initializeSimulator();
 void simulatorAddProcess(ProcessScheduler* processScheduler, expression infixExpression);
 
@@ -731,12 +731,12 @@ static void activate(GtkApplication* app, gpointer user_data){
 
     gtk_window_present(GTK_WINDOW(window));
 
-    g_timeout_add_seconds(1, updateSimulatorProcessScheduler, NULL);
-    g_timeout_add_seconds(1, updateProcessList, NULL);
-    g_timeout_add_seconds(1, updateProcessorList, NULL);
-    g_timeout_add_seconds(1, updateTimeframeList, NULL);
-    g_timeout_add_seconds(1, updateGanttChart, NULL);
-    g_timeout_add_seconds(1, updateLabelDisplay, NULL);
+    g_timeout_add_seconds(1, G_SOURCE_FUNC(updateSimulatorProcessScheduler), NULL);
+    g_timeout_add_seconds(1, G_SOURCE_FUNC(updateProcessList), NULL);
+    g_timeout_add_seconds(1, G_SOURCE_FUNC(updateProcessorList), NULL);
+    g_timeout_add_seconds(1, G_SOURCE_FUNC(updateTimeframeList), NULL);
+    g_timeout_add_seconds(1, G_SOURCE_FUNC(updateGanttChart), NULL);
+    g_timeout_add_seconds(1, G_SOURCE_FUNC(updateLabelDisplay), NULL);
 }
 
 int main(int argc, char** argv){
